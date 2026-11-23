@@ -1,0 +1,102 @@
+name: Release
+
+# A tag "v1.2.3" builds the release APK signed with the key from the
+# repository secrets, checks signature and permissions and publishes a GitHub
+# release with verba-1.2.3.apk and its SHA-256 checksum; the notes come from
+# CHANGELOG.md. Obtainium picks up the APK from there.
+# Started by hand, it only builds the artifact (for trying out), no release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build, sign, publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Version from gradle.properties, matching the tag
+        run: |
+          version=$(sed -n 's/^verba\.version=//p' gradle.properties)
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match verba.version=$version in gradle.properties"
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Signing key from secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.VERBA_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            if [ "$GITHUB_REF_TYPE" = tag ]; then
+              echo "::error::Secret VERBA_KEYSTORE_BASE64 is missing, see docs/release-signing.md"
+              exit 1
+            fi
+            echo "::warning::No signing key: the APK stays unsigned"
+            exit 0
+          fi
+          # --ignore-garbage: tolerate line breaks (\r\n) from a PowerShell pipe
+          echo "$KEYSTORE_BASE64" | base64 --decode --ignore-garbage > "$RUNNER_TEMP/release.jks"
+          echo "VERBA_KEYSTORE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Tests and release build
+        env:
+          VERBA_KEYSTORE_PASSWORD: ${{ secrets.VERBA_KEYSTORE_PASSWORD }}
+          VERBA_KEY_ALIAS: ${{ secrets.VERBA_KEY_ALIAS }}
+        run: ./gradlew testDebugUnitTest lintDebug assembleRelease
+
+      - name: Check signature and permissions, name the APK
+        run: |
+          mkdir -p dist
+          if [ -n "${VERBA_KEYSTORE:-}" ]; then
+            apk=app/build/outputs/apk/release/app-release.apk
+            out="dist/verba-$VERSION.apk"
+            apksigner=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+            "$apksigner" verify --print-certs "$apk" | tee signature.txt
+            sed -n 's/.*certificate SHA-256 digest: //p' signature.txt | head -1 > cert-sha256.txt
+          else
+            apk=app/build/outputs/apk/release/app-release-unsigned.apk
+            out="dist/verba-$VERSION-unsigned.apk"
+          fi
+          tools/check-permissions.sh "$apk"
+          cp "$apk" "$out"
+          (cd dist && sha256sum "$(basename "$out")" > "$(basename "$out").sha256")
+          rm -f "$VERBA_KEYSTORE" 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: verba-${{ env.VERSION }}
+          path: dist/*
+
+      - name: Release notes from CHANGELOG.md
+        if: github.ref_type == 'tag'
+        run: |
+          awk -v head="## [$VERSION]" '
+            index($0, head) == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "Verba $VERSION" > notes.md
+          if [ -s cert-sha256.txt ]; then
+            printf '\n---\nSigning certificate SHA-256: `%s`\n' "$(cat cert-sha256.txt)" >> notes.md
+          fi
+
+      - name: GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --title "Verba $VERSION" --notes-file notes.md
