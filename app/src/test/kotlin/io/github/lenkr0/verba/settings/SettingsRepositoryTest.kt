@@ -1,0 +1,54 @@
+package io.github.lenkr0.verba.settings
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class SettingsRepositoryTest {
+    private class InMemoryStore : KeyValueStore {
+        val values = mutableMapOf<String, Any>()
+        override fun string(key: String) = values[key] as String?
+        override fun boolean(key: String) = values[key] as Boolean?
+        override fun write(values: Map<String, Any>) = this.values.putAll(values)
+    }
+
+    @Test
+    fun defaultsWhenNothingIsStored() {
+        val settings = SettingsRepository(InMemoryStore()).settings.value
+        assertEquals(AppSettings(), settings)
+    }
+
+    @Test
+    fun themeModeIsStoredAndReloaded() {
+        val store = InMemoryStore()
+        SettingsRepository(store).setThemeMode(ThemeMode.Dark)
+        assertEquals("dark", store.values["theme_mode"])
+        assertEquals(ThemeMode.Dark, SettingsRepository(store).settings.value.themeMode)
+    }
+
+    @Test
+    fun unknownStoredThemeFallsBackToSystem() {
+        assertEquals(ThemeMode.System, ThemeMode.fromStorage("sepia"))
+        assertEquals(ThemeMode.System, ThemeMode.fromStorage(null))
+    }
+
+    @Test
+    fun turningOnEInkAnswersTheSuggestion() {
+        val repository = SettingsRepository(InMemoryStore())
+        repository.setEInkMode(true)
+        val settings = repository.settings.value
+        assertTrue(settings.eInkMode)
+        assertTrue(settings.eInkPromptAnswered)
+    }
+
+    @Test
+    fun suggestionOnlyOnEInkDevicesAndOnlyOnce() {
+        val repository = SettingsRepository(InMemoryStore())
+        assertFalse(repository.settings.value.shouldSuggestEInk(isEInkDevice = false))
+        assertTrue(repository.settings.value.shouldSuggestEInk(isEInkDevice = true))
+        repository.dismissEInkPrompt()
+        assertFalse(repository.settings.value.shouldSuggestEInk(isEInkDevice = true))
+        assertFalse(repository.settings.value.eInkMode)
+    }
+}
