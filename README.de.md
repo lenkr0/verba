@@ -1,0 +1,104 @@
+# Verba
+
+*Ein ruhiger Vokabel-Sammler für alle, die auf Android englische Bücher und Manga lesen.*
+
+[English](README.md) · **Deutsch**
+
+Markiere in einer beliebigen App ein Wort, sieh die deutsche Übersetzung und
+speichere es zusammen mit dem Satz, in dem du es gefunden hast – später
+wiederholst du es mit genau diesem Satz. Verba funktioniert komplett offline,
+hat keine Werbung, kein Tracking, nicht einmal Internetzugriff und braucht
+keine Google-Play-Dienste. Ein E-Ink-Modus macht die App auf E-Readern wie dem
+Boox Go 7 angenehm.
+
+> **Stand: frühe Entwicklung.** Version 0.1.0 ist das Fundament – Designs,
+> E-Ink-Modus, Sprachen und Einstellungen. Die Funktionen unten kommen
+> Meilenstein für Meilenstein, siehe [Roadmap](../../issues?q=label%3Amilestone).
+> Screenshots folgen mit den ersten Funktionen.
+
+## Funktionen
+
+Schon da:
+
+- **Helles und dunkles Design**, wie im System oder von Hand gewählt.
+- **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
+  Tippflächen. Auf Boox-E-Readern schlägt Verba ihn beim ersten Start vor.
+- **Englisch und Deutsch**, die Sprache lässt sich pro App einstellen.
+
+Geplant, in dieser Reihenfolge:
+
+- [ ] **Markieren → übersetzen → speichern** aus dem Textauswahl-Menü jeder
+  App: Wort, Grundform („running“ → „run“), deutsche Übersetzungen, eine
+  kurze englische Definition und der Satz als Kontext. Verba merkt sich die
+  App und das Buch bzw. den Manga, den du liest.
+- [ ] **Offline-Wörterbuch Englisch → Deutsch** aus Wiktionary und Ding.
+- [ ] **Vokabelliste** mit Suche, Filtern, Bearbeiten und Zusammenführen von
+  Duplikaten über die Grundform.
+- [ ] **Lernen** mit Karteikarten und FSRS-Wiederholungsplanung; die Karte
+  zeigt deinen Satz mit einer Lücke.
+- [ ] **Manga:** Texterkennung auf Screenshots (Teilen oder
+  Schnelleinstellungs-Kachel); ein erkanntes Wort antippen und nachschlagen.
+- [ ] **Satzübersetzung** (optional, offline wenn machbar).
+- [ ] **Export und Backup:** CSV, JSON, AnkiDroid.
+- [ ] **Startbildschirm-Widget** „Vokabel des Tages“.
+
+## Datenschutz
+
+- Verba fordert **keine Berechtigungen** an – nicht einmal Internetzugriff.
+  Die CI schlägt fehl, wenn eine Bibliothek eine hinzufügen will
+  (`tools/check-permissions.sh`).
+- Keine Telemetrie, keine Werbung, keine Google-Play-Dienste.
+- Deine Wörter sind vom Google-Cloud-Backup ausgenommen; der Umzug auf ein
+  neues Handy per Kabel oder WLAN (Gerät-zu-Gerät-Übertragung) funktioniert
+  trotzdem.
+
+## Installation
+
+Verba erscheint auf [GitHub Releases](../../releases). Am einfachsten
+installierst und aktualisierst du die App mit
+[Obtainium](https://github.com/ImranR98/Obtainium):
+
+1. Obtainium installieren (aus dessen GitHub-Releases oder von F-Droid).
+2. In Obtainium **App hinzufügen** antippen, `https://github.com/lenkr0/verba`
+   einfügen und **Hinzufügen** antippen.
+3. **Installieren** antippen. Android fragt einmal, ob Obtainium Apps
+   installieren darf.
+
+Danach sucht Obtainium im Hintergrund nach neuen Versionen und meldet sich.
+Du kannst `verba-<version>.apk` auch direkt aus dem neuesten Release laden und
+öffnen. Jedes Release nennt die SHA-256-Prüfsumme der APK und des
+Signaturzertifikats.
+
+Benötigt Android 13 oder neuer. Gemacht für Android 13 (Boox Go 7) und
+Android 16 (Poco F6 Pro, HyperOS).
+
+## Selbst bauen
+
+Benötigt JDK 21 und das Android SDK (Android Studio oder die
+Kommandozeilen-Tools).
+
+```
+./gradlew assembleDebug               # Debug-APK, installiert sich neben dem Release als „Verba Debug“
+./gradlew testDebugUnitTest           # Unit-Tests
+./gradlew connectedDebugAndroidTest   # Tests auf Gerät oder Emulator
+./gradlew lintDebug                   # Android Lint
+```
+
+Die CI baut bei jedem Push, führt Unit-Tests, Lint und die
+Berechtigungsprüfung aus; Pull Requests und `main` laufen zusätzlich auf
+Emulatoren mit Android 13 und Android 16 ohne Google Play. Ein Tag `v1.2.3` –
+passend zu `verba.version` in `gradle.properties` – baut die signierte APK
+und veröffentlicht das Release. Wie der Signierschlüssel erstellt und
+hinterlegt wird, steht in [docs/release-signing.md](docs/release-signing.md).
+
+## Übersetzungen
+
+Die Oberfläche gibt es auf Englisch und Deutsch. Die Texte liegen in
+`app/src/main/res/values-<sprache>/strings.xml`; eine neue Sprache braucht
+außerdem einen Eintrag in `AppLanguage.supported`. Korrekturen und neue
+Sprachen sind willkommen.
+
+## Lizenz
+
+GPL-3.0-or-later, siehe [LICENSE](LICENSE). Hinweise zu Drittanbietern in
+[NOTICE.md](NOTICE.md), Änderungen in [CHANGELOG.md](CHANGELOG.md).
