@@ -47,7 +47,7 @@
     <string name="settings_target_language">Translate into</string>
     <string name="language_source_title">Language of the text</string>
     <string name="language_target_title">Translate into</string>
-    <string name="language_recent">Recent</string>
+    <string name="language_recent">Suggested</string>
     <string name="language_all">All languages</string>
 
     <!-- Capture sheet -->

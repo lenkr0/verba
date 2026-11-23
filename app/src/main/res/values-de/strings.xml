@@ -45,7 +45,7 @@
     <string name="settings_target_language">Übersetzen in</string>
     <string name="language_source_title">Sprache des Textes</string>
     <string name="language_target_title">Übersetzen in</string>
-    <string name="language_recent">Zuletzt</string>
+    <string name="language_recent">Vorschläge</string>
     <string name="language_all">Alle Sprachen</string>
 
     <!-- Capture sheet -->

@@ -14,6 +14,9 @@ class DictionaryLookup(private val store: DictionaryStore) {
     suspend fun canLookUp(language: String, target: String): Boolean =
         store.installedNow().any { it.sourceLanguage == language && (it.targetLanguage == target || it.targetLanguage == "en") }
 
+    /** Installed packs as last scanned; for suggesting languages. */
+    fun installed(): List<PackInfo> = store.installed.value
+
     suspend fun lookup(language: String, target: String, word: String, following: String): LookupResult? =
         withContext(Dispatchers.IO) {
             val primary = store.pack(language, target)

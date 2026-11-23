@@ -13,6 +13,7 @@ import io.github.lenkr0.verba.dictionary.DictionaryEntry
 import io.github.lenkr0.verba.dictionary.DictionaryLookup
 import io.github.lenkr0.verba.dictionary.DictionarySense
 import io.github.lenkr0.verba.dictionary.LookupResult
+import io.github.lenkr0.verba.language.Languages
 import io.github.lenkr0.verba.language.Lemmatizer
 import io.github.lenkr0.verba.language.ScriptDetector
 import io.github.lenkr0.verba.language.Sentence
@@ -76,7 +77,13 @@ class CaptureViewModel(
     var state by mutableStateOf(initialState())
         private set
 
-    val recentLanguages: List<String> get() = settings.settings.value.recentLanguages
+    /** Languages offered first when picking the text's language: recent ones, then those with a dictionary. */
+    val sourceSuggestions: List<String>
+        get() = (settings.settings.value.recentLanguages + dictionary.installed().map { it.sourceLanguage }).distinct()
+
+    /** Languages offered first when picking "translate into": those with a dictionary, the device language, English. */
+    val targetSuggestions: List<String>
+        get() = (dictionary.installed().map { it.targetLanguage } + Languages.defaultTarget() + "en").distinct()
 
     // Fields the user typed into are not overwritten by the dictionary or a saved entry
     private var lemmaEdited = false

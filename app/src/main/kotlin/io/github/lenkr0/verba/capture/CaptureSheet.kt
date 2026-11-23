@@ -60,6 +60,7 @@ import io.github.lenkr0.verba.dictionary.DictionarySense
 import io.github.lenkr0.verba.dictionary.LookupResult
 import io.github.lenkr0.verba.ui.components.VerbaCard
 import io.github.lenkr0.verba.language.Languages
+import io.github.lenkr0.verba.language.Pinyin
 import io.github.lenkr0.verba.language.Sentence
 import io.github.lenkr0.verba.ui.components.LanguagePickerDialog
 import io.github.lenkr0.verba.ui.theme.LocalEInkMode
@@ -166,7 +167,7 @@ private fun CaptureContent(viewModel: CaptureViewModel, onSave: () -> Unit, onGe
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                TappableText(state.sentences, state.choice, viewModel::chooseWord)
+                TappableText(state.sentences, state.choice, state.wordStart, state.wordEnd, viewModel::chooseWord)
                 if (state.phraseAllowed) {
                     TextButton(onClick = viewModel::choosePhrase) {
                         Text(stringResource(R.string.capture_whole_selection))
@@ -193,14 +194,14 @@ private fun CaptureContent(viewModel: CaptureViewModel, onSave: () -> Unit, onGe
         Picker.Source -> LanguagePickerDialog(
             title = stringResource(R.string.language_source_title),
             selected = state.language,
-            recent = viewModel.recentLanguages,
+            recent = viewModel.sourceSuggestions,
             onSelect = { picker = null; viewModel.setLanguage(it) },
             onDismiss = { picker = null },
         )
         Picker.Target -> LanguagePickerDialog(
             title = stringResource(R.string.language_target_title),
             selected = state.targetLanguage,
-            recent = emptyList(),
+            recent = viewModel.targetSuggestions,
             onSelect = { picker = null; viewModel.setTargetLanguage(it) },
             onDismiss = { picker = null },
         )
@@ -250,7 +251,13 @@ private fun LanguageChip(tag: String, onClick: () -> Unit) {
 /** The selection with every word tappable; works for languages without spaces too. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TappableText(sentences: List<Sentence>, choice: WordChoice?, onChoose: (Int, Int) -> Unit) {
+private fun TappableText(
+    sentences: List<Sentence>,
+    choice: WordChoice?,
+    matchStart: Int,
+    matchEnd: Int,
+    onChoose: (Int, Int) -> Unit,
+) {
     val style = MaterialTheme.typography.bodyLarge.reading()
     FlowRow(Modifier.fillMaxWidth()) {
         sentences.forEachIndexed { sentenceIndex, sentence ->
@@ -258,7 +265,9 @@ private fun TappableText(sentences: List<Sentence>, choice: WordChoice?, onChoos
                 when {
                     token.isWord -> WordToken(
                         text = token.text,
-                        selected = choice == WordChoice(sentenceIndex, tokenIndex),
+                        // The whole match is marked, which can span several pieces (食|べた)
+                        selected = choice?.sentence == sentenceIndex &&
+                            (choice.token == tokenIndex || token.start >= matchStart && token.end <= matchEnd),
                         style = style,
                         onClick = { onChoose(sentenceIndex, tokenIndex) },
                     )
@@ -396,7 +405,7 @@ private fun DictionaryResults(
                     Text(entry.lemma, style = MaterialTheme.typography.titleMedium.reading())
                     entry.reading?.takeIf { it != entry.lemma }?.let {
                         Text(
-                            it,
+                            if (result.pack.sourceLanguage == "zh") Pinyin.withToneMarks(it) else it,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(start = 8.dp),
