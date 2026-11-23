@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="action_settings">Einstellungen</string>
     <string name="action_back">Zurück</string>
     <string name="action_cancel">Abbrechen</string>
 
     <!-- Home -->
     <string name="home_empty_title">Noch keine Wörter</string>
-    <string name="home_empty_body">Bald kannst du in jeder App – Buch, Browser, Manga-Reader – ein Wort markieren und „Verba“ wählen, um es mit seinem Satz zu speichern.</string>
-    <string name="home_steps_title">So wird es funktionieren</string>
+    <string name="home_empty_body">Markiere in einer beliebigen App – Buch, Browser, Manga-Reader – ein Wort und wähle „Verba“, um es mit seinem Satz zu speichern.</string>
+    <string name="home_steps_title">So funktioniert es</string>
     <string name="home_step_select">Beim Lesen ein Wort oder einen Satz markieren</string>
-    <string name="home_step_translate">„Verba“ wählen und die Übersetzung sehen</string>
+    <string name="home_step_translate">„Verba“ wählen und das gesuchte Wort antippen</string>
     <string name="home_step_learn">Speichern und später mit dem Satz wiederholen</string>
 
     <!-- Settings -->
@@ -36,6 +35,38 @@
     <string name="eink_prompt_body">E-Ink-Modus einschalten? Er nutzt reines Schwarz-Weiß, schaltet Animationen ab und macht Schaltflächen größer. Du kannst das jederzeit in den Einstellungen ändern.</string>
     <string name="eink_prompt_enable">Einschalten</string>
     <string name="eink_prompt_dismiss">Nicht jetzt</string>
+
+    <plurals name="home_sentences">
+        <item quantity="one">%d Satz</item>
+        <item quantity="other">%d Sätze</item>
+    </plurals>
+
+    <!-- Settings: languages -->
+    <string name="settings_target_language">Übersetzen in</string>
+    <string name="language_source_title">Sprache des Textes</string>
+    <string name="language_target_title">Übersetzen in</string>
+    <string name="language_recent">Zuletzt</string>
+    <string name="language_all">Alle Sprachen</string>
+
+    <!-- Capture sheet -->
+    <string name="capture_share_label">In Verba speichern</string>
+    <string name="capture_no_text">Verba hat keinen Text bekommen.</string>
+    <string name="capture_tap_word">Tippe das Wort an, das du nachschlagen willst</string>
+    <string name="capture_whole_selection">Ganze Auswahl speichern</string>
+    <string name="capture_from_app">aus %1$s</string>
+    <string name="capture_base_form">Grundform</string>
+    <string name="capture_translation">Übersetzung (%1$s)</string>
+    <string name="capture_no_dictionary">Noch kein Wörterbuch – Offline-Wörterbücher kommen mit Version 0.3.</string>
+    <string name="capture_definition">Definition (optional)</string>
+    <string name="capture_sentence">Satz (optional)</string>
+    <string name="capture_source_title">Buch, Novel oder Manga (optional)</string>
+    <string name="capture_save">Speichern</string>
+    <string name="capture_saved">„%1$s“ gespeichert</string>
+    <string name="capture_saved_existing">Satz zu „%1$s“ hinzugefügt</string>
+    <plurals name="capture_existing">
+        <item quantity="one">Schon in deiner Liste mit %d Satz – Speichern fügt diesen hinzu.</item>
+        <item quantity="other">Schon in deiner Liste mit %d Sätzen – Speichern fügt diesen hinzu.</item>
+    </plurals>
 
     <string name="error_no_browser">Keine App gefunden, die diesen Link öffnen kann.</string>
 </resources>

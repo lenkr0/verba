@@ -4,4 +4,14 @@
     <style name="Theme.Verba" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/window_background</item>
     </style>
+
+    <!-- The capture sheet: a transparent window over the app the text came
+         from, no activity animation (the sheet brings its own, or none in
+         E-ink mode) and no system dim (the sheet draws its own scrim). -->
+    <style name="Theme.Verba.Capture" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
 </resources>

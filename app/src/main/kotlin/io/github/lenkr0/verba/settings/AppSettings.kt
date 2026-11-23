@@ -17,6 +17,10 @@ data class AppSettings(
     val eInkMode: Boolean = false,
     /** The user has answered the "E-ink display detected" question (either way). */
     val eInkPromptAnswered: Boolean = false,
+    /** Language words are translated into (BCP 47); defaults to the device language. */
+    val targetLanguage: String = "en",
+    /** Languages of recent lookups, most recent first. */
+    val recentLanguages: List<String> = emptyList(),
 ) {
     fun shouldSuggestEInk(isEInkDevice: Boolean): Boolean = isEInkDevice && !eInkMode && !eInkPromptAnswered
 }
