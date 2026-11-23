@@ -156,7 +156,9 @@ def build_ja(out: str, version: str, jmdict: str, target: str) -> dict:
             continue
         lemma = e.kanji[0] if e.kanji else e.readings[0]
         h = merger.headword(lemma, e.pos)
-        h.reading = e.readings[0] if e.readings else None
+        # JMdict lists the usual reading first; later entries with the same
+        # spelling (archaic or rare readings) must not replace it
+        h.reading = h.reading or (e.readings[0] if e.readings else None)
         h.forms |= set(e.kanji[1:]) | set(e.readings)
         for glosses in senses:
             if definition_language == target:

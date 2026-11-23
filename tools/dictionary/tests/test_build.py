@@ -57,6 +57,11 @@ JMDICT = """<?xml version="1.0" encoding="UTF-8"?>
 <r_ele><reb>ねこ</reb></r_ele>
 <sense><pos>&n;</pos><gloss>cat</gloss></sense>
 </entry>
+<entry><ent_seq>3</ent_seq>
+<k_ele><keb>猫</keb></k_ele>
+<r_ele><reb>ねこま</reb></r_ele>
+<sense><pos>&n;</pos><gloss>cat (archaic)</gloss></sense>
+</entry>
 </JMdict>
 """
 
@@ -127,7 +132,7 @@ class BuildTest(unittest.TestCase):
         rows, _ = lookup(pack, "はしる")  # reading → kanji headword
         self.assertEqual(("走る", "はしる", "laufen; rennen", "de"), (rows[0][0], rows[0][1], rows[0][2], rows[0][4]))
         rows, _ = lookup(pack, "猫")  # no German gloss → English definition
-        self.assertEqual(("", "cat", "en"), (rows[0][2], rows[0][3], rows[0][4]))
+        self.assertEqual(("ねこ", "", "cat", "en"), (rows[0][1], rows[0][2], rows[0][3], rows[0][4]))
 
     def test_chinese_english(self):
         path = write(self.dir, "cedict.txt", CEDICT)
