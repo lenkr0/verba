@@ -55,6 +55,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.lenkr0.verba.R
 import io.github.lenkr0.verba.data.SaveResult
+import io.github.lenkr0.verba.dictionary.DictionaryEntry
+import io.github.lenkr0.verba.dictionary.DictionarySense
+import io.github.lenkr0.verba.dictionary.LookupResult
+import io.github.lenkr0.verba.ui.components.VerbaCard
 import io.github.lenkr0.verba.language.Languages
 import io.github.lenkr0.verba.language.Sentence
 import io.github.lenkr0.verba.ui.components.LanguagePickerDialog
@@ -63,8 +67,15 @@ import io.github.lenkr0.verba.ui.theme.reading
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CaptureSheet(viewModel: CaptureViewModel, onDismiss: () -> Unit, onSaved: (SaveResult, String) -> Unit) {
-    val content: @Composable () -> Unit = { CaptureContent(viewModel, onSave = { viewModel.save(onSaved) }) }
+fun CaptureSheet(
+    viewModel: CaptureViewModel,
+    onDismiss: () -> Unit,
+    onSaved: (SaveResult, String) -> Unit,
+    onGetDictionaries: () -> Unit,
+) {
+    val content: @Composable () -> Unit = {
+        CaptureContent(viewModel, onSave = { viewModel.save(onSaved) }, onGetDictionaries = onGetDictionaries)
+    }
     if (LocalEInkMode.current) {
         StaticSheet(onDismiss, content)
     } else {
@@ -122,12 +133,13 @@ object CaptureTags {
     const val SENTENCE = "capture_sentence"
     const val TITLE = "capture_title"
     const val SAVE = "capture_save"
+    const val DICTIONARY = "capture_dictionary"
 }
 
 private enum class Picker { Source, Target }
 
 @Composable
-private fun CaptureContent(viewModel: CaptureViewModel, onSave: () -> Unit) {
+private fun CaptureContent(viewModel: CaptureViewModel, onSave: () -> Unit, onGetDictionaries: () -> Unit) {
     val state = viewModel.state
     var picker by rememberSaveable { mutableStateOf<Picker?>(null) }
 
@@ -161,7 +173,7 @@ private fun CaptureContent(viewModel: CaptureViewModel, onSave: () -> Unit) {
                     }
                 }
             }
-            if (state.hasWord) WordFields(state, viewModel)
+            if (state.hasWord) WordFields(state, viewModel, onGetDictionaries)
         }
         if (state.hasWord) {
             Button(
@@ -277,8 +289,9 @@ private fun WordToken(text: String, selected: Boolean, style: TextStyle, onClick
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun WordFields(state: CaptureUiState, viewModel: CaptureViewModel) {
+private fun WordFields(state: CaptureUiState, viewModel: CaptureViewModel, onGetDictionaries: () -> Unit) {
     Text(state.wordForm, style = MaterialTheme.typography.headlineSmall.reading())
+    DictionarySection(state, viewModel, onGetDictionaries)
     OutlinedTextField(
         value = state.lemma,
         onValueChange = viewModel::setLemma,
@@ -290,7 +303,6 @@ private fun WordFields(state: CaptureUiState, viewModel: CaptureViewModel) {
         value = state.translation,
         onValueChange = viewModel::setTranslation,
         label = { Text(stringResource(R.string.capture_translation, Languages.displayName(state.targetLanguage))) },
-        supportingText = { Text(stringResource(R.string.capture_no_dictionary)) },
         modifier = Modifier.fillMaxWidth().testTag(CaptureTags.TRANSLATION),
     )
     OutlinedTextField(
@@ -335,3 +347,106 @@ private fun WordFields(state: CaptureUiState, viewModel: CaptureViewModel) {
         )
     }
 }
+
+@Composable
+private fun DictionarySection(state: CaptureUiState, viewModel: CaptureViewModel, onGetDictionaries: () -> Unit) {
+    when (val dictionary = state.dictionary) {
+        DictionaryState.Idle -> Unit
+        DictionaryState.NotFound -> Hint(stringResource(R.string.capture_not_found))
+        DictionaryState.Unavailable -> Column {
+            Hint(
+                stringResource(
+                    R.string.capture_no_dictionary_pair,
+                    Languages.displayName(state.language),
+                    Languages.displayName(state.targetLanguage),
+                ),
+            )
+            TextButton(onClick = onGetDictionaries) { Text(stringResource(R.string.capture_get_dictionaries)) }
+        }
+        is DictionaryState.Found -> DictionaryResults(dictionary.result, state.translation, viewModel::useSense)
+    }
+}
+
+@Composable
+private fun Hint(text: String) {
+    Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
+
+/** The dictionary's entries for the word; tapping a sense puts it into the fields. */
+@Composable
+private fun DictionaryResults(
+    result: LookupResult,
+    currentTranslation: String,
+    onUse: (DictionaryEntry, DictionarySense) -> Unit,
+) {
+    VerbaCard(Modifier.fillMaxWidth().testTag(CaptureTags.DICTIONARY)) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (result.fallback) {
+                Text(
+                    stringResource(
+                        R.string.capture_fallback,
+                        "${Languages.displayName(result.pack.sourceLanguage)} → ${Languages.displayName(result.pack.targetLanguage)}",
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            result.entries.take(MAX_ENTRIES).forEach { entry ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(entry.lemma, style = MaterialTheme.typography.titleMedium.reading())
+                    entry.reading?.takeIf { it != entry.lemma }?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                    }
+                    entry.partOfSpeech?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                    }
+                }
+                entry.senses.take(MAX_SENSES).forEach { sense ->
+                    SenseRow(sense, selected = sense.text() == currentTranslation) { onUse(entry, sense) }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SenseRow(sense: DictionarySense, selected: Boolean, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (selected) colors.primaryContainer else Color.Transparent)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+    ) {
+        Text(
+            sense.text(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (selected) colors.onPrimaryContainer else colors.onSurface,
+        )
+        val extra = sense.extraDefinition()
+        if (extra.isNotBlank()) {
+            Text(
+                extra,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+private const val MAX_ENTRIES = 3
+private const val MAX_SENSES = 4

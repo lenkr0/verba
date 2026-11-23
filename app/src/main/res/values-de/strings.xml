@@ -28,7 +28,7 @@
     <string name="settings_license">Lizenz</string>
     <string name="settings_license_summary">GNU General Public License v3.0 oder neuer</string>
     <string name="settings_privacy">Datenschutz</string>
-    <string name="settings_privacy_summary">Verba hat keinen Internetzugriff. Deine Wörter bleiben auf diesem Gerät.</string>
+    <string name="settings_privacy_summary">Verba geht nur online, wenn du ein Wörterbuch lädst. Deine Wörter bleiben auf diesem Gerät.</string>
 
     <!-- E-ink suggestion on e-readers -->
     <string name="eink_prompt_title">E-Ink-Display erkannt</string>
@@ -56,7 +56,6 @@
     <string name="capture_from_app">aus %1$s</string>
     <string name="capture_base_form">Grundform</string>
     <string name="capture_translation">Übersetzung (%1$s)</string>
-    <string name="capture_no_dictionary">Noch kein Wörterbuch – Offline-Wörterbücher kommen mit Version 0.3.</string>
     <string name="capture_definition">Definition (optional)</string>
     <string name="capture_sentence">Satz (optional)</string>
     <string name="capture_source_title">Buch, Novel oder Manga (optional)</string>
@@ -67,6 +66,36 @@
         <item quantity="one">Schon in deiner Liste mit %d Satz – Speichern fügt diesen hinzu.</item>
         <item quantity="other">Schon in deiner Liste mit %d Sätzen – Speichern fügt diesen hinzu.</item>
     </plurals>
+
+    <!-- Dictionaries -->
+    <string name="settings_dictionaries">Wörterbücher</string>
+    <string name="settings_dictionaries_summary">Wörterbücher für die Sprachen laden, die du liest</string>
+    <string name="dictionaries_intro">Wörterbücher werden einmal heruntergeladen und funktionieren dann offline. Verba geht nur online, wenn du eines lädst – und nur zu GitHub, wo die Wörterbücher veröffentlicht sind.</string>
+    <string name="dictionaries_installed">Auf diesem Gerät</string>
+    <string name="dictionaries_available">Verfügbar</string>
+    <string name="dictionaries_loading">Liste wird geladen …</string>
+    <string name="dictionaries_failed">Die Liste konnte nicht geladen werden. Prüfe deine Internetverbindung.</string>
+    <string name="dictionaries_download">Laden</string>
+    <string name="dictionaries_update">Aktualisieren</string>
+    <string name="dictionaries_delete">Löschen</string>
+    <string name="dictionaries_delete_title">%1$s löschen?</string>
+    <string name="dictionaries_delete_body">Deine Wörter bleiben erhalten. Du kannst das Wörterbuch jederzeit wieder laden.</string>
+    <string name="dictionaries_import">Aus einer Datei importieren</string>
+    <string name="dictionaries_import_summary">Eine Wörterbuch-Datei (.sqlite oder .sqlite.gz), die du selbst geladen hast</string>
+    <string name="dictionaries_installed_info">Version %1$s · %2$s</string>
+    <string name="dictionaries_download_size">%1$s Download · %2$s Wörter</string>
+    <string name="dictionaries_sources">Quellen und Lizenzen</string>
+    <string name="dictionaries_error_download">Der Download ist fehlgeschlagen. Prüfe die Verbindung und versuche es noch einmal.</string>
+    <string name="dictionaries_error_checksum">Der Download war beschädigt und wurde verworfen. Bitte versuche es noch einmal.</string>
+    <string name="dictionaries_error_invalid">Diese Datei ist kein Verba-Wörterbuch.</string>
+    <string name="action_retry">Erneut versuchen</string>
+    <string name="action_close">Schließen</string>
+
+    <!-- Capture sheet: dictionary -->
+    <string name="capture_fallback">Aus dem Wörterbuch %1$s – in deine Sprache gibt es noch keines.</string>
+    <string name="capture_no_dictionary_pair">Kein Wörterbuch %1$s → %2$s installiert.</string>
+    <string name="capture_get_dictionaries">Wörterbücher laden</string>
+    <string name="capture_not_found">Nicht im Wörterbuch. Tippe die Übersetzung selbst ein.</string>
 
     <string name="error_no_browser">Keine App gefunden, die diesen Link öffnen kann.</string>
 </resources>

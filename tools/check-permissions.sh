@@ -11,6 +11,8 @@ aapt2="$(ls -d "$sdk"/build-tools/*/aapt2* 2>/dev/null | sort -V | tail -1)"
 
 # One pattern per line; each needs a reason.
 allowed=(
+  # Downloading dictionary packs when the user taps "Download" (M2)
+  '^android\.permission\.INTERNET$'
   # androidx.core: protects receivers registered with RECEIVER_NOT_EXPORTED,
   # declared and used only by the app itself
   '^io\.github\.lenkr0\.verba(\.debug)?\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$'

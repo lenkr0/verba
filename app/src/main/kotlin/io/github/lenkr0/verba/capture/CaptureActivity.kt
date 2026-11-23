@@ -1,5 +1,6 @@
 package io.github.lenkr0.verba.capture
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -9,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.lenkr0.verba.MainActivity
 import io.github.lenkr0.verba.R
 import io.github.lenkr0.verba.appContainer
 import io.github.lenkr0.verba.ui.theme.VerbaTheme
@@ -40,7 +42,7 @@ class CaptureActivity : ComponentActivity() {
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle()
             VerbaTheme(darkTheme = isDarkTheme(settings.themeMode), eInk = settings.eInkMode) {
-                val viewModel = viewModel { CaptureViewModel(request, container.settings, container.vocabulary) }
+                val viewModel = viewModel { CaptureViewModel(request, container.settings, container.vocabulary, container.dictionaryLookup) }
                 CaptureSheet(
                     viewModel = viewModel,
                     onDismiss = ::finish,
@@ -51,6 +53,14 @@ class CaptureActivity : ComponentActivity() {
                             getString(R.string.capture_saved, lemma)
                         }
                         Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                        finish()
+                    },
+                    onGetDictionaries = {
+                        startActivity(
+                            Intent(this, MainActivity::class.java)
+                                .putExtra(MainActivity.EXTRA_OPEN, MainActivity.OPEN_DICTIONARIES)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                        )
                         finish()
                     },
                 )

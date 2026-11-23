@@ -124,6 +124,7 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
     // Pinned so the app and its tests (kotlinx-coroutines-test) use the same version
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.room.runtime)
