@@ -1,0 +1,83 @@
+name: Dictionaries
+
+# Builds the offline dictionary packs from their open sources and publishes
+# them with catalog.json as assets of the release "dictionaries", where the
+# app downloads them from (Settings → Dictionaries). That release is marked
+# as a pre-release and never "latest", so Obtainium doesn't take it for an
+# app update. Runs by hand and on the 2nd of every month (Wiktionary dumps
+# are refreshed regularly).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 2 * *'
+  push:
+    branches:
+      - main
+      # Temporary while milestone 2 is built; removed before it is merged
+      - milestone/m2-dictionaries
+    paths:
+      - 'tools/dictionary/**'
+      - '.github/workflows/dictionaries.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dictionaries
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: dictionaries
+  UA: verba-dictionary-build (+https://github.com/lenkr0/verba)
+
+jobs:
+  build:
+    name: Build and publish packs
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Builder tests
+        run: python -m unittest discover -s tools/dictionary/tests -v
+
+      - name: Download sources
+        run: |
+          mkdir -p sources
+          dl() { curl --fail --location --retry 5 --retry-delay 30 -A "$UA" -o "sources/$1" "$2"; }
+          dl en.jsonl https://kaikki.org/dictionary/English/kaikki.org-dictionary-English.jsonl
+          dl de-extract.jsonl.gz https://kaikki.org/dictionary/downloads/de/de-extract.jsonl.gz
+          dl de-en.txt.gz https://ftp.tu-chemnitz.de/pub/Local/urz/ding/de-en/de-en.txt.gz
+          dl JMdict.gz http://ftp.edrdg.org/pub/Nihongo/JMdict.gz
+          dl cedict.txt.gz https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz
+          ls -l sources
+
+      - name: Build packs
+        run: |
+          B=tools/dictionary/build.py
+          python $B en-de --out out/en-de.sqlite --enwiktionary sources/en.jsonl \
+            --dewiktionary sources/de-extract.jsonl.gz --ding sources/de-en.txt.gz > /dev/null
+          python $B ja-de --out out/ja-de.sqlite --jmdict sources/JMdict.gz > /dev/null
+          python $B ja-en --out out/ja-en.sqlite --jmdict sources/JMdict.gz > /dev/null
+          python $B zh-en --out out/zh-en.sqlite --cedict sources/cedict.txt.gz > /dev/null
+
+      - name: Catalog
+        run: |
+          python tools/dictionary/catalog.py out \
+            "https://github.com/${{ github.repository }}/releases/download/$RELEASE_TAG" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --title "Dictionaries" --prerelease --latest=false \
+              --notes "Offline dictionary packs for Verba. Download them in the app under Settings → Dictionaries. Sources and licenses of every pack are listed in catalog.json and shown in the app."
+          fi
+          # Packs first, catalog last: the app never sees a catalog pointing to missing files
+          gh release upload "$RELEASE_TAG" out/*.sqlite.gz --clobber
+          gh release upload "$RELEASE_TAG" out/catalog.json --clobber
