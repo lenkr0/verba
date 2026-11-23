@@ -1,0 +1,133 @@
+package io.github.lenkr0.verba.ui.theme
+
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
+
+// Calm palette: warm paper neutrals, a muted ink blue as accent and amber for highlights.
+
+internal val LightColors = lightColorScheme(
+    primary = Color(0xFF35557A),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFD6E3F7),
+    onPrimaryContainer = Color(0xFF0E2236),
+    inversePrimary = Color(0xFFA6C8F0),
+    secondary = Color(0xFF5C6470),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFE0E3E8),
+    onSecondaryContainer = Color(0xFF191C21),
+    tertiary = Color(0xFF7A5A2E),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFF6E0C0),
+    onTertiaryContainer = Color(0xFF2A1A00),
+    background = Color(0xFFFAF9F6),
+    onBackground = Color(0xFF1B1C1E),
+    surface = Color(0xFFFAF9F6),
+    onSurface = Color(0xFF1B1C1E),
+    surfaceVariant = Color(0xFFE3E3E0),
+    onSurfaceVariant = Color(0xFF46474A),
+    surfaceTint = Color(0xFF35557A),
+    inverseSurface = Color(0xFF303133),
+    inverseOnSurface = Color(0xFFF2F1EE),
+    error = Color(0xFFB3261E),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFF9DEDC),
+    onErrorContainer = Color(0xFF410E0B),
+    outline = Color(0xFF77787C),
+    outlineVariant = Color(0xFFC7C7C4),
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFFFAF9F6),
+    surfaceDim = Color(0xFFDBDAD7),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFF5F4F1),
+    surfaceContainer = Color(0xFFEFEEEB),
+    surfaceContainerHigh = Color(0xFFE9E8E5),
+    surfaceContainerHighest = Color(0xFFE3E2DF),
+)
+
+internal val DarkColors = darkColorScheme(
+    primary = Color(0xFFA6C8F0),
+    onPrimary = Color(0xFF0B2A47),
+    primaryContainer = Color(0xFF284463),
+    onPrimaryContainer = Color(0xFFD6E3F7),
+    inversePrimary = Color(0xFF35557A),
+    secondary = Color(0xFFC3C7CF),
+    onSecondary = Color(0xFF2C3138),
+    secondaryContainer = Color(0xFF43474E),
+    onSecondaryContainer = Color(0xFFDFE2EA),
+    tertiary = Color(0xFFE6C08D),
+    onTertiary = Color(0xFF422C05),
+    tertiaryContainer = Color(0xFF5C4319),
+    onTertiaryContainer = Color(0xFFFFDDB1),
+    background = Color(0xFF121315),
+    onBackground = Color(0xFFE3E2E0),
+    surface = Color(0xFF121315),
+    onSurface = Color(0xFFE3E2E0),
+    surfaceVariant = Color(0xFF45474A),
+    onSurfaceVariant = Color(0xFFC6C6C9),
+    surfaceTint = Color(0xFFA6C8F0),
+    inverseSurface = Color(0xFFE3E2E0),
+    inverseOnSurface = Color(0xFF303133),
+    error = Color(0xFFF2B8B5),
+    onError = Color(0xFF601410),
+    errorContainer = Color(0xFF8C1D18),
+    onErrorContainer = Color(0xFFF9DEDC),
+    outline = Color(0xFF8F9094),
+    outlineVariant = Color(0xFF45474A),
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFF38393B),
+    surfaceDim = Color(0xFF121315),
+    surfaceContainerLowest = Color(0xFF0D0E10),
+    surfaceContainerLow = Color(0xFF1A1B1D),
+    surfaceContainer = Color(0xFF1E1F21),
+    surfaceContainerHigh = Color(0xFF282A2C),
+    surfaceContainerHighest = Color(0xFF333537),
+)
+
+/**
+ * E-ink: only ink and paper, no tones. Containers are filled with ink so that
+ * selected and emphasized elements stay visible without shades of gray.
+ */
+internal fun eInkColors(dark: Boolean): ColorScheme {
+    val ink = if (dark) Color.White else Color.Black
+    val paper = if (dark) Color.Black else Color.White
+    return lightColorScheme(
+        primary = ink,
+        onPrimary = paper,
+        primaryContainer = ink,
+        onPrimaryContainer = paper,
+        inversePrimary = paper,
+        secondary = ink,
+        onSecondary = paper,
+        secondaryContainer = ink,
+        onSecondaryContainer = paper,
+        tertiary = ink,
+        onTertiary = paper,
+        tertiaryContainer = ink,
+        onTertiaryContainer = paper,
+        background = paper,
+        onBackground = ink,
+        surface = paper,
+        onSurface = ink,
+        surfaceVariant = paper,
+        onSurfaceVariant = ink,
+        surfaceTint = paper,
+        inverseSurface = ink,
+        inverseOnSurface = paper,
+        error = ink,
+        onError = paper,
+        errorContainer = ink,
+        onErrorContainer = paper,
+        outline = ink,
+        outlineVariant = ink,
+        scrim = Color.Black,
+        surfaceBright = paper,
+        surfaceDim = paper,
+        surfaceContainerLowest = paper,
+        surfaceContainerLow = paper,
+        surfaceContainer = paper,
+        surfaceContainerHigh = paper,
+        surfaceContainerHighest = paper,
+    )
+}
