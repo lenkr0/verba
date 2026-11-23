@@ -1,14 +1,16 @@
 # Verba
 
-*A calm vocabulary collector for reading English books and manga on Android.*
+*A calm vocabulary collector for reading books, novels and manga in any language.*
 
 **English** · [Deutsch](README.de.md)
 
-Select a word in any app, see its German translation and save it together
-with the sentence you found it in – then review it later with that sentence.
-Verba works completely offline, has no ads, no tracking and not even
-internet access, and doesn't need Google Play services. An E-ink mode makes
-it comfortable on e-readers such as the Boox Go 7.
+Select a word in any app, see its translation into your own language and
+save it together with the sentence you found it in – then review it later
+with that sentence. Whether you read English fantasy, Chinese web novels or
+Japanese manga: Verba works the same way for every language pair. It works
+completely offline, has no ads, no tracking and not even internet access,
+and doesn't need Google Play services. An E-ink mode makes it comfortable on
+e-readers such as the Boox Go 7.
 
 > **Status: early development.** Version 0.1.0 is the foundation – themes,
 > E-ink mode, languages and settings. The features below arrive milestone by
@@ -27,16 +29,19 @@ Already there:
 Planned, in this order:
 
 - [ ] **Select → translate → save** from the text selection menu of any app:
-  word, base form ("running" → "run"), German translations, a short English
-  definition and the sentence as context. Verba remembers the app and the
-  book or manga you're reading.
-- [ ] **Offline English → German dictionary** built from Wiktionary and Ding.
+  word, base form ("running" → "run"), translations into your language, a
+  short definition and the sentence as context. Languages without spaces,
+  such as Chinese or Japanese, are split into words you can tap. Verba
+  remembers the app and the book or manga you're reading.
+- [ ] **Offline dictionaries per language pair**, built from Wiktionary and
+  other open dictionaries – starting with English → German, more pairs to
+  follow.
 - [ ] **Word list** with search, filters, editing and merging duplicates by
   base form.
 - [ ] **Review** with flashcards and FSRS spaced repetition; the card shows
   your sentence with a gap.
-- [ ] **Manga:** text recognition on screenshots (share or quick-settings
-  tile); tap a recognized word to look it up.
+- [ ] **Manga and images:** text recognition on screenshots (share or
+  quick-settings tile); tap a recognized word to look it up.
 - [ ] **Sentence translation** (optional, offline if feasible).
 - [ ] **Export and backup:** CSV, JSON, AnkiDroid.
 - [ ] **Home screen widget** "Word of the day".
