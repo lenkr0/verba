@@ -8,6 +8,17 @@ updated anymore (you'd have to uninstall, losing the app's data).
 The key never goes into the repository. It lives in your password manager
 and, base64-encoded, in three GitHub secrets that the release workflow uses.
 
+## The quick way (Windows)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup-release-signing.ps1
+```
+
+The script creates `%USERPROFILE%\verba-release.jks` if it doesn't exist yet
+(asking for a new password twice), checks the password and stores the three
+secrets with the GitHub CLI. Passwords go into hidden prompts and are never
+shown or saved. Then continue with step 3 below. The manual steps follow.
+
 ## 1. Create the key (once)
 
 `keytool` comes with every JDK. On Windows (PowerShell), with the JDK 21 that
