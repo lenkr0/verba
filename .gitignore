@@ -1,0 +1,24 @@
+# Gradle and build output
+.gradle/
+.kotlin/
+build/
+/captures
+.externalNativeBuild
+.cxx
+
+# Local configuration: SDK path, signing keys, secrets
+local.properties
+keystore.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+.env
+
+# IDE
+*.iml
+.idea/
+.DS_Store
+
+# Generated dictionary packs (built in CI, published as release assets)
+/tools/dictionary/out/
