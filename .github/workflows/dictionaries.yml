@@ -13,8 +13,6 @@ on:
   push:
     branches:
       - main
-      # Temporary while milestone 2 is built; removed before it is merged
-      - milestone/m2-dictionaries
     paths:
       - 'tools/dictionary/**'
       - '.github/workflows/dictionaries.yml'

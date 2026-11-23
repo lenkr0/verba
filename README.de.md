@@ -8,12 +8,12 @@ Markiere in einer beliebigen App ein Wort, sieh die Übersetzung in deine
 Sprache und speichere es zusammen mit dem Satz, in dem du es gefunden hast –
 später wiederholst du es mit genau diesem Satz. Ob englische Fantasy,
 chinesische Web-Novels oder japanische Manga: Verba funktioniert für jedes
-Sprachpaar gleich. Die App läuft komplett offline, hat keine Werbung, kein
-Tracking, nicht einmal Internetzugriff und braucht keine Google-Play-Dienste.
+Sprachpaar gleich. Die Wörterbücher funktionieren offline, die App hat
+keine Werbung, kein Tracking und braucht keine Google-Play-Dienste.
 Ein E-Ink-Modus macht sie auf E-Readern wie dem Boox Go 7 angenehm.
 
-> **Stand: frühe Entwicklung.** Verba sammelt Wörter aus jeder App;
-> Offline-Wörterbücher folgen mit der nächsten Version. Die Funktionen unten
+> **Stand: frühe Entwicklung.** Verba sammelt Wörter aus jeder App und
+> schlägt sie in Offline-Wörterbüchern nach, die du in der App lädst. Die Funktionen unten
 > kommen Meilenstein für Meilenstein, siehe
 > [Roadmap](../../issues?q=label%3Amilestone). Screenshots folgen bald.
 
@@ -25,9 +25,14 @@ Schon da:
   Verba wählen, an Verba teilen oder aus der Wörterbuch-Funktion eines
   Readers schicken. Im Satz das gesuchte Wort antippen – Chinesisch und
   Japanisch werden auch in Wörter zerlegt – und mit Satz, Buch und
-  Herkunfts-App speichern. Englische Wörter bekommen ihre Grundform
-  („running“ → „run“). Bis die Wörterbücher kommen, tippst du die
-  Übersetzung selbst ein.
+  Herkunfts-App speichern.
+- **Offline-Wörterbücher pro Sprachpaar**, in der App geladen und danach
+  ohne Internet nutzbar: bisher Englisch → Deutsch, Japanisch → Deutsch,
+  Japanisch → Englisch und Chinesisch → Englisch, gebaut aus Wiktionary,
+  Ding, JMdict und CC-CEDICT. Verba findet Grundformen („running“ → „run“,
+  „gave up“ → „give up“), japanische Beugungen (食べた → 食べる) und den
+  längsten Treffer in Sprachen ohne Leerzeichen; gibt es noch kein
+  Wörterbuch in deine Sprache, zeigt es das englische und sagt das dazu.
 - **Vokabelliste** mit dem letzten Satz und der Quelle jedes Worts.
 - **Helles und dunkles Design**, wie im System oder von Hand gewählt.
 - **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
@@ -36,8 +41,6 @@ Schon da:
 
 Geplant, in dieser Reihenfolge:
 
-- [ ] **Offline-Wörterbücher pro Sprachpaar** aus Wiktionary und anderen
-  freien Wörterbüchern – zuerst Englisch → Deutsch, weitere Paare folgen.
 - [ ] **Vokabelliste** mit Suche, Filtern, Bearbeiten und Zusammenführen von
   Duplikaten über die Grundform.
 - [ ] **Lernen** mit Karteikarten und FSRS-Wiederholungsplanung; die Karte
@@ -61,13 +64,15 @@ Verba taucht an drei Stellen auf:
   ColorDict oder Aard 2 schicken, wähle eines davon als Wörterbuch – das
   Wort öffnet sich dann in Verba.
 
-Deine eigene Sprache wählst du einmal unter Einstellungen → Übersetzen in.
+Deine eigene Sprache wählst du einmal unter Einstellungen → Übersetzen in,
+die nötigen Wörterbücher lädst du unter Einstellungen → Wörterbücher.
 
 ## Datenschutz
 
-- Verba fordert **keine Berechtigungen** an – nicht einmal Internetzugriff.
-  Die CI schlägt fehl, wenn eine Bibliothek eine hinzufügen will
-  (`tools/check-permissions.sh`).
+- Verba fordert **eine Berechtigung an: Internetzugriff**, genutzt nur,
+  wenn du ein Wörterbuch lädst – aus den Releases dieses Projekts auf GitHub,
+  sonst nichts. Die CI schlägt fehl, wenn eine Bibliothek eine andere
+  Berechtigung hinzufügen will (`tools/check-permissions.sh`).
 - Keine Telemetrie, keine Werbung, keine Google-Play-Dienste.
 - Deine Wörter sind vom Google-Cloud-Backup ausgenommen; der Umzug auf ein
   neues Handy per Kabel oder WLAN (Gerät-zu-Gerät-Übertragung) funktioniert
@@ -122,4 +127,6 @@ Sprachen sind willkommen.
 ## Lizenz
 
 GPL-3.0-or-later, siehe [LICENSE](LICENSE). Hinweise zu Drittanbietern in
-[NOTICE.md](NOTICE.md), Änderungen in [CHANGELOG.md](CHANGELOG.md).
+[NOTICE.md](NOTICE.md), Änderungen in [CHANGELOG.md](CHANGELOG.md). Die
+Wörterbücher sind eigene Downloads unter den Lizenzen ihrer Quellen
+(CC BY-SA 4.0, GPL-2.0-or-later); die App zeigt sie zu jedem Wörterbuch an.

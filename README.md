@@ -7,13 +7,13 @@
 Select a word in any app, see its translation into your own language and
 save it together with the sentence you found it in – then review it later
 with that sentence. Whether you read English fantasy, Chinese web novels or
-Japanese manga: Verba works the same way for every language pair. It works
-completely offline, has no ads, no tracking and not even internet access,
-and doesn't need Google Play services. An E-ink mode makes it comfortable on
+Japanese manga: Verba works the same way for every language pair. Its
+dictionaries work offline, it has no ads and no tracking, and it doesn't
+need Google Play services. An E-ink mode makes it comfortable on
 e-readers such as the Boox Go 7.
 
-> **Status: early development.** Verba collects words from any app; offline
-> dictionaries follow in the next version. The features below arrive
+> **Status: early development.** Verba collects words from any app and looks
+> them up in offline dictionaries you download in the app. The features below arrive
 > milestone by milestone, see the [roadmap](../../issues?q=label%3Amilestone).
 > Screenshots follow soon.
 
@@ -25,8 +25,14 @@ Already there:
   selection menu, share it to Verba, or send it from a reader's dictionary
   lookup. Tap the word you want in the sentence – Chinese and Japanese are
   split into words too – and save it with the sentence, the book and the
-  app it came from. English words get their base form ("running" → "run").
-  Until the dictionaries arrive, you type the translation yourself.
+  app it came from.
+- **Offline dictionaries per language pair**, downloaded in the app and
+  then used without internet: English → German, Japanese → German,
+  Japanese → English and Chinese → English so far, built from Wiktionary,
+  Ding, JMdict and CC-CEDICT. Verba finds base forms ("running" → "run",
+  "gave up" → "give up"), Japanese conjugations (食べた → 食べる) and the
+  longest match in languages without spaces; where there's no dictionary
+  into your language yet, it shows the English one and says so.
 - **Word list** with each word's latest sentence and source.
 - **Light and dark theme**, following the system or set by hand.
 - **E-ink mode:** pure black and white, no animations, larger touch targets.
@@ -35,9 +41,6 @@ Already there:
 
 Planned, in this order:
 
-- [ ] **Offline dictionaries per language pair**, built from Wiktionary and
-  other open dictionaries – starting with English → German, more pairs to
-  follow.
 - [ ] **Word list** with search, filters, editing and merging duplicates by
   base form.
 - [ ] **Review** with flashcards and FSRS spaced repetition; the card shows
@@ -61,12 +64,15 @@ Verba shows up in three places:
   to ColorDict or Aard 2, choose one of them as its dictionary; the word
   then opens in Verba.
 
-Pick your own language once under Settings → Translate into.
+Pick your own language once under Settings → Translate into, and download
+the dictionaries you need under Settings → Dictionaries.
 
 ## Privacy
 
-- Verba requests **no permissions** – not even internet access. CI fails if
-  a library tries to add one (`tools/check-permissions.sh`).
+- Verba requests **one permission: internet access**, used only when you
+  download a dictionary – from this project's releases on GitHub, nothing
+  else. CI fails if a library tries to add any other permission
+  (`tools/check-permissions.sh`).
 - No telemetry, no ads, no Google Play services.
 - Your words are excluded from Google's cloud backup; moving to a new phone
   by cable or Wi-Fi (device-to-device transfer) still works.
@@ -109,6 +115,11 @@ Android 16 emulators without Google Play. A tag `v1.2.3` – matching
 the release. How the signing key is created and stored is described in
 [docs/release-signing.md](docs/release-signing.md).
 
+The dictionaries are built by `tools/dictionary` (Python 3) in the
+[Dictionaries workflow](.github/workflows/dictionaries.yml), monthly and
+whenever the builder changes; sources, catalog and pack format are described
+in [docs/dictionary-format.md](docs/dictionary-format.md).
+
 ## Translations
 
 The UI is available in English and German. Strings live in
@@ -119,4 +130,6 @@ welcome.
 ## License
 
 GPL-3.0-or-later, see [LICENSE](LICENSE). Third-party notices are in
-[NOTICE.md](NOTICE.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+[NOTICE.md](NOTICE.md). The dictionaries are separate downloads under their
+sources' licenses (CC BY-SA 4.0, GPL-2.0-or-later); the app shows them for
+every dictionary. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
