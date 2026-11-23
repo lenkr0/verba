@@ -33,12 +33,15 @@ EN_WIKTIONARY = [
 
 DE_WIKTIONARY = [
     {"word": "obscure", "lang_code": "en", "pos": "adj", "senses": [{"glosses": ["dunkel, unklar"]}]},
+    {"word": "dogs", "lang_code": "en", "pos": "noun", "senses": [{"glosses": ["Nominativ Plural von dog"]}]},
 ]
 
 DING = """# Version :: 1.9
 laufen {vi}; rennen {vi} | laufend | gelaufen :: to run | running | run
 dunkel; finster :: obscure
 Hund {m} | Hunde {pl} :: dog | dogs
+zittern; beben | zitternd :: to shiver; to tremble | shivering; trembling
+Bildzittern {n} :: trembling
 """
 
 JMDICT = """<?xml version="1.0" encoding="UTF-8"?>
@@ -86,7 +89,7 @@ def lookup(pack, word):
         """SELECT h.lemma, h.reading, s.translations, s.definition, s.definition_language, s.source
            FROM headwords h JOIN senses s ON s.headword_id = h.id
            WHERE h.lemma_key = ?1 OR h.id IN (SELECT headword_id FROM forms WHERE form_key = ?1)
-           ORDER BY h.rank, h.id, s.position""",
+           ORDER BY h.rank >= 50000, h.lemma_key != ?1, h.rank, h.id, s.position""",
         (key(word),),
     ).fetchall()
     meta = dict(db.execute("SELECT key, value FROM meta"))
@@ -121,9 +124,14 @@ class BuildTest(unittest.TestCase):
         self.assertIn("dunkel, unklar", [r[2] for r in rows])
         self.assertIn("finster", " ".join(r[2] for r in rows))
 
-        rows, _ = lookup(pack, "dogs")  # only in Ding, with its plural
-        self.assertEqual(("dog", "Hund"), (rows[0][0], rows[0][2]))
+        rows, _ = lookup(pack, "dogs")  # Ding plus "Plural von dog" from de.wiktionary: a form, not a meaning
+        self.assertEqual([("dog", "Hund")], [(r[0], r[2]) for r in rows])
         self.assertEqual([], lookup(pack, "Lauf")[0])  # German words aren't English headwords
+        # a form belongs to the synonym at its position, not to all synonyms
+        rows = lookup(pack, "trembling")[0]
+        self.assertNotIn("shiver", {r[0] for r in rows})
+        # Ding's own "trembling" entry goes after the base form
+        self.assertEqual(["tremble", "trembling"], [r[0] for r in rows])
 
     def test_japanese_german_with_english_fallback(self):
         path = write(self.dir, "JMdict.gz", JMDICT, gz=True)

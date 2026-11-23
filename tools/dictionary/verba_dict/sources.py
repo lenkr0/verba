@@ -81,26 +81,33 @@ class DingEntry:
 
 
 def ding(path: str) -> Iterator[DingEntry]:
-    """English headwords with German translations.
+    """English headwords with German translations, one entry per line and synonym.
 
     A Ding line is "German | inflections :: English | inflections"; both
     sides are aligned by "|", synonyms are separated by ";". The first
-    column is the entry, the others are its inflected forms.
+    column is the entry, the others are its inflected forms – listed in the
+    same order as the synonyms ("to shiver; to tremble | shivering;
+    trembling"), so a form belongs to the synonym at its position.
     """
     with open_text(path) as f:
         for line in f:
             if line.startswith("#") or " :: " not in line:
                 continue
             german_side, english_side = line.rstrip("\n").split(" :: ", 1)
-            german_cols = german_side.split(" | ")
-            english_cols = english_side.split(" | ")
-            german = [_clean_ding(g) for g in german_cols[0].split("; ")]
-            german = [g for g in german if g]
-            forms = {_english_key(e) for col in english_cols[1:] for e in col.split("; ")}
-            for english in english_cols[0].split("; "):
+            german = [g for g in (_clean_ding(x) for x in german_side.split(" | ")[0].split("; ")) if g]
+            english_cols = [col.split("; ") for col in english_side.split(" | ")]
+            synonyms = english_cols[0]
+            for i, english in enumerate(synonyms):
                 key_text = _english_key(english)
-                if key_text and german and len(key_text) <= 60:
-                    yield DingEntry(key_text, german, {f for f in forms if f and f != key_text})
+                if not key_text or not german or len(key_text) > 60:
+                    continue
+                forms = set()
+                for col in english_cols[1:]:
+                    if len(col) == len(synonyms):
+                        form = _english_key(col[i])
+                        if form and form != key_text:
+                            forms.add(form)
+                yield DingEntry(key_text, german, forms)
 
 
 # --- JMdict (EDRDG), Japanese ------------------------------------------------

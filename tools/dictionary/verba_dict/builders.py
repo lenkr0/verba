@@ -3,6 +3,7 @@ headwords and writes a pack."""
 
 from __future__ import annotations
 
+import re
 from collections import OrderedDict, defaultdict
 
 from . import sources as src
@@ -51,6 +52,15 @@ CEDICT = Source(
 )
 
 
+MAX_DING_SENSES = 4
+DE_FORM_OF = re.compile(
+    r"^(?:Nominativ |Genitiv |Dativ |Akkusativ )?(?:Plural|Partizip|Präteritum|Präsens|Komparativ|Superlativ|"
+    r"\d\. Person|Simple Past|Past Participle|Present Participle|Gerundium)[^:]*?\bvon[: ]+(\S+?)[.;,]?$"
+)
+# Ranks at or above this go after all other results (see docs/dictionary-format.md)
+DEMOTED = 100_000
+
+
 class Merger:
     """Collects headwords by (base form key, part of speech) and inflected forms by base form."""
 
@@ -71,10 +81,18 @@ class Merger:
         return self.by_key.get(lemma_key, [])
 
     def write(self, writer: PackWriter) -> None:
+        form_keys = set()
         for lemma_key, forms in self.forms_of.items():
             for h in self.by_key.get(lemma_key, []):
                 h.forms |= forms
+                form_keys |= {key(f) for f in forms}
         for h in self.headwords.values():
+            # "trembling" is mainly a form of "tremble": an entry known only from
+            # Ding that is also an inflected form of another word goes last
+            lemma_key = key(h.lemma)
+            if (lemma_key in form_keys and lemma_key.endswith(("ing", "ed"))
+                    and all(s.source == DING.id for s in h.senses)):
+                h.rank += DEMOTED
             # Lower rank first: builders may mark common words; among the rest,
             # more translations first, so the usual reading of a word wins
             h.rank -= sum(len(s.translations) for s in h.senses)
@@ -110,30 +128,40 @@ def build_en_de(out: str, version: str, enwiktionary: str, dewiktionary: str | N
         used.append(DEWIKTIONARY)
         for entry in src.wiktextract(dewiktionary, "en"):
             word = entry.get("word", "")
-            meanings = [s["glosses"][-1] for s in src.real_senses(entry)]
+            meanings = []
+            for gloss in (s["glosses"][-1] for s in src.real_senses(entry)):
+                # The German Wiktionary describes inflected forms in words:
+                # "Plural von child" is a form of "child", not a meaning
+                form_of = DE_FORM_OF.match(gloss)
+                if form_of:
+                    merger.forms_of[key(form_of.group(1))].add(word)
+                else:
+                    meanings.append(gloss)
             if word and meanings:
                 h = merger.headword(word, entry.get("pos"))
                 h.senses.append(Sense(meanings[:4], "", "de", DEWIKTIONARY.id))
 
     if ding:
         used.append(DING)
-        ding_by_key: dict[str, list[str]] = defaultdict(list)
+        # Each Ding line is one sense; a word can have several lines
+        ding_senses: dict[str, list[list[str]]] = defaultdict(list)
         ding_forms: dict[str, set[str]] = defaultdict(set)
         ding_lemma: dict[str, str] = {}
         for e in src.ding(ding):
             k = key(e.english)
-            ding_by_key[k].extend(e.german)
+            ding_senses[k].append(e.german)
             ding_forms[k] |= e.english_forms
             ding_lemma.setdefault(k, e.english)
-        for k, german in ding_by_key.items():
+        for k, senses in ding_senses.items():
             existing = merger.by_lemma(k)
-            if existing:
-                known = {t for h in existing for s in h.senses for t in s.translations}
+            target = existing[0] if existing else merger.headword(ding_lemma[k], None)
+            known = {t for h in existing for s in h.senses for t in s.translations}
+            # Ding's line order is arbitrary; the central meaning usually has the most synonyms
+            for german in sorted(senses, key=len, reverse=True)[:MAX_DING_SENSES]:
                 extra = [g for g in german if g not in known]
                 if extra:
-                    existing[0].senses.append(Sense(extra[:12], "", "de", DING.id))
-            else:
-                merger.headword(ding_lemma[k], None).senses.append(Sense(german[:12], "", "de", DING.id))
+                    target.senses.append(Sense(extra, "", "de", DING.id))
+                    known |= set(extra)
             merger.forms_of[k] |= ding_forms[k]
 
     writer = PackWriter(out, "en", "de", "English → German", version, used)
