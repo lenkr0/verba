@@ -1,15 +1,16 @@
 # Verba
 
-*Ein ruhiger Vokabel-Sammler für alle, die auf Android englische Bücher und Manga lesen.*
+*Ein ruhiger Vokabel-Sammler für alle, die Bücher, Novels und Manga in einer anderen Sprache lesen.*
 
 [English](README.md) · **Deutsch**
 
-Markiere in einer beliebigen App ein Wort, sieh die deutsche Übersetzung und
-speichere es zusammen mit dem Satz, in dem du es gefunden hast – später
-wiederholst du es mit genau diesem Satz. Verba funktioniert komplett offline,
-hat keine Werbung, kein Tracking, nicht einmal Internetzugriff und braucht
-keine Google-Play-Dienste. Ein E-Ink-Modus macht die App auf E-Readern wie dem
-Boox Go 7 angenehm.
+Markiere in einer beliebigen App ein Wort, sieh die Übersetzung in deine
+Sprache und speichere es zusammen mit dem Satz, in dem du es gefunden hast –
+später wiederholst du es mit genau diesem Satz. Ob englische Fantasy,
+chinesische Web-Novels oder japanische Manga: Verba funktioniert für jedes
+Sprachpaar gleich. Die App läuft komplett offline, hat keine Werbung, kein
+Tracking, nicht einmal Internetzugriff und braucht keine Google-Play-Dienste.
+Ein E-Ink-Modus macht sie auf E-Readern wie dem Boox Go 7 angenehm.
 
 > **Stand: frühe Entwicklung.** Version 0.1.0 ist das Fundament – Designs,
 > E-Ink-Modus, Sprachen und Einstellungen. Die Funktionen unten kommen
@@ -28,15 +29,17 @@ Schon da:
 Geplant, in dieser Reihenfolge:
 
 - [ ] **Markieren → übersetzen → speichern** aus dem Textauswahl-Menü jeder
-  App: Wort, Grundform („running“ → „run“), deutsche Übersetzungen, eine
-  kurze englische Definition und der Satz als Kontext. Verba merkt sich die
-  App und das Buch bzw. den Manga, den du liest.
-- [ ] **Offline-Wörterbuch Englisch → Deutsch** aus Wiktionary und Ding.
+  App: Wort, Grundform („running“ → „run“), Übersetzungen in deine Sprache,
+  eine kurze Definition und der Satz als Kontext. Sprachen ohne Leerzeichen
+  wie Chinesisch oder Japanisch werden in antippbare Wörter zerlegt. Verba
+  merkt sich die App und das Buch bzw. den Manga, den du liest.
+- [ ] **Offline-Wörterbücher pro Sprachpaar** aus Wiktionary und anderen
+  freien Wörterbüchern – zuerst Englisch → Deutsch, weitere Paare folgen.
 - [ ] **Vokabelliste** mit Suche, Filtern, Bearbeiten und Zusammenführen von
   Duplikaten über die Grundform.
 - [ ] **Lernen** mit Karteikarten und FSRS-Wiederholungsplanung; die Karte
   zeigt deinen Satz mit einer Lücke.
-- [ ] **Manga:** Texterkennung auf Screenshots (Teilen oder
+- [ ] **Manga und Bilder:** Texterkennung auf Screenshots (Teilen oder
   Schnelleinstellungs-Kachel); ein erkanntes Wort antippen und nachschlagen.
 - [ ] **Satzübersetzung** (optional, offline wenn machbar).
 - [ ] **Export und Backup:** CSV, JSON, AnkiDroid.
