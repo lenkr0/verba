@@ -8,10 +8,10 @@
 
     <!-- Home -->
     <string name="home_empty_title">No words yet</string>
-    <string name="home_empty_body">Soon you can select a word in any app – a book, a browser, a manga reader – and choose “Verba” to save it together with its sentence.</string>
-    <string name="home_steps_title">How it will work</string>
+    <string name="home_empty_body">Select a word in any app – a book, a browser, a manga reader – and choose “Verba” to save it together with its sentence.</string>
+    <string name="home_steps_title">How it works</string>
     <string name="home_step_select">Select a word or sentence while reading</string>
-    <string name="home_step_translate">Choose “Verba” to see the translation</string>
+    <string name="home_step_translate">Choose “Verba” and tap the word you want</string>
     <string name="home_step_learn">Save it and review it later with its sentence</string>
 
     <!-- Settings -->
@@ -37,6 +37,38 @@
     <string name="eink_prompt_body">Turn on E-ink mode? It uses pure black and white, turns off animations and makes buttons larger. You can change this any time in Settings.</string>
     <string name="eink_prompt_enable">Turn on</string>
     <string name="eink_prompt_dismiss">Not now</string>
+
+    <plurals name="home_sentences">
+        <item quantity="one">%d sentence</item>
+        <item quantity="other">%d sentences</item>
+    </plurals>
+
+    <!-- Settings: languages -->
+    <string name="settings_target_language">Translate into</string>
+    <string name="language_source_title">Language of the text</string>
+    <string name="language_target_title">Translate into</string>
+    <string name="language_recent">Recent</string>
+    <string name="language_all">All languages</string>
+
+    <!-- Capture sheet -->
+    <string name="capture_share_label">Save to Verba</string>
+    <string name="capture_no_text">Verba received no text.</string>
+    <string name="capture_tap_word">Tap the word you want to look up</string>
+    <string name="capture_whole_selection">Save the whole selection</string>
+    <string name="capture_from_app">from %1$s</string>
+    <string name="capture_base_form">Base form</string>
+    <string name="capture_translation">Translation (%1$s)</string>
+    <string name="capture_no_dictionary">No dictionary yet – offline dictionaries come with version 0.3.</string>
+    <string name="capture_definition">Definition (optional)</string>
+    <string name="capture_sentence">Sentence (optional)</string>
+    <string name="capture_source_title">Book, novel or manga (optional)</string>
+    <string name="capture_save">Save</string>
+    <string name="capture_saved">Saved “%1$s”</string>
+    <string name="capture_saved_existing">Sentence added to “%1$s”</string>
+    <plurals name="capture_existing">
+        <item quantity="one">Already in your list with %d sentence – saving adds this one.</item>
+        <item quantity="other">Already in your list with %d sentences – saving adds this one.</item>
+    </plurals>
 
     <string name="error_no_browser">No app found to open this link.</string>
 </resources>

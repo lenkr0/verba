@@ -12,15 +12,22 @@ completely offline, has no ads, no tracking and not even internet access,
 and doesn't need Google Play services. An E-ink mode makes it comfortable on
 e-readers such as the Boox Go 7.
 
-> **Status: early development.** Version 0.1.0 is the foundation – themes,
-> E-ink mode, languages and settings. The features below arrive milestone by
-> milestone, see the [roadmap](../../issues?q=label%3Amilestone). Screenshots
-> follow with the first features.
+> **Status: early development.** Verba collects words from any app; offline
+> dictionaries follow in the next version. The features below arrive
+> milestone by milestone, see the [roadmap](../../issues?q=label%3Amilestone).
+> Screenshots follow soon.
 
 ## Features
 
 Already there:
 
+- **Collect words from any app:** select text and choose Verba in the
+  selection menu, share it to Verba, or send it from a reader's dictionary
+  lookup. Tap the word you want in the sentence – Chinese and Japanese are
+  split into words too – and save it with the sentence, the book and the
+  app it came from. English words get their base form ("running" → "run").
+  Until the dictionaries arrive, you type the translation yourself.
+- **Word list** with each word's latest sentence and source.
 - **Light and dark theme**, following the system or set by hand.
 - **E-ink mode:** pure black and white, no animations, larger touch targets.
   On Boox e-readers Verba suggests it on first start.
@@ -28,11 +35,6 @@ Already there:
 
 Planned, in this order:
 
-- [ ] **Select → translate → save** from the text selection menu of any app:
-  word, base form ("running" → "run"), translations into your language, a
-  short definition and the sentence as context. Languages without spaces,
-  such as Chinese or Japanese, are split into words you can tap. Verba
-  remembers the app and the book or manga you're reading.
 - [ ] **Offline dictionaries per language pair**, built from Wiktionary and
   other open dictionaries – starting with English → German, more pairs to
   follow.
@@ -45,6 +47,21 @@ Planned, in this order:
 - [ ] **Sentence translation** (optional, offline if feasible).
 - [ ] **Export and backup:** CSV, JSON, AnkiDroid.
 - [ ] **Home screen widget** "Word of the day".
+
+## Using Verba
+
+Verba shows up in three places:
+
+- **Selection menu:** select text, then look for "Verba" in the menu (often
+  under ⋮). This works in apps that look for text tools, such as Chrome or
+  Firefox; some apps don't offer it.
+- **Share:** select text → Share → "Save to Verba". Works in almost every
+  app.
+- **Reading apps with external dictionaries:** if your reader can send words
+  to ColorDict or Aard 2, choose one of them as its dictionary; the word
+  then opens in Verba.
+
+Pick your own language once under Settings → Translate into.
 
 ## Privacy
 

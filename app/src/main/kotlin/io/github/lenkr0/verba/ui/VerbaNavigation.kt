@@ -6,6 +6,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -53,7 +56,8 @@ fun VerbaNavigation(container: AppContainer) {
         predictivePopTransitionSpec = if (eInk) noPredictiveTransition else defaultPredictivePopTransitionSpec(),
         entryProvider = entryProvider {
             entry<HomeRoute> {
-                HomeScreen(onOpenSettings = { backStack.add(SettingsRoute) })
+                val entries by remember { container.vocabulary.entryList() }.collectAsStateWithLifecycle(initialValue = null)
+                HomeScreen(entries = entries, onOpenSettings = { backStack.add(SettingsRoute) })
             }
             entry<SettingsRoute> {
                 SettingsScreen(repository = container.settings, onBack = { backStack.removeLastOrNull() })

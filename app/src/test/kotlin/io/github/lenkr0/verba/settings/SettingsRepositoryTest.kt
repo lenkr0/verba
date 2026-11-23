@@ -43,6 +43,21 @@ class SettingsRepositoryTest {
     }
 
     @Test
+    fun targetLanguageDefaultsToTheDeviceLanguageUntilChosen() {
+        val store = InMemoryStore()
+        assertEquals("de", SettingsRepository(store, defaultTargetLanguage = "de").settings.value.targetLanguage)
+        SettingsRepository(store, defaultTargetLanguage = "de").setTargetLanguage("en")
+        assertEquals("en", SettingsRepository(store, defaultTargetLanguage = "de").settings.value.targetLanguage)
+    }
+
+    @Test
+    fun recentLanguagesKeepTheLastFiveMostRecentFirst() {
+        val repository = SettingsRepository(InMemoryStore())
+        listOf("en", "zh", "ja", "fr", "es", "ko", "zh").forEach(repository::noteLanguageUsed)
+        assertEquals(listOf("zh", "ko", "es", "fr", "ja"), repository.settings.value.recentLanguages)
+    }
+
+    @Test
     fun suggestionOnlyOnEInkDevicesAndOnlyOnce() {
         val repository = SettingsRepository(InMemoryStore())
         assertFalse(repository.settings.value.shouldSuggestEInk(isEInkDevice = false))

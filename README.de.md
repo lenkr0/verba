@@ -12,15 +12,23 @@ Sprachpaar gleich. Die App läuft komplett offline, hat keine Werbung, kein
 Tracking, nicht einmal Internetzugriff und braucht keine Google-Play-Dienste.
 Ein E-Ink-Modus macht sie auf E-Readern wie dem Boox Go 7 angenehm.
 
-> **Stand: frühe Entwicklung.** Version 0.1.0 ist das Fundament – Designs,
-> E-Ink-Modus, Sprachen und Einstellungen. Die Funktionen unten kommen
-> Meilenstein für Meilenstein, siehe [Roadmap](../../issues?q=label%3Amilestone).
-> Screenshots folgen mit den ersten Funktionen.
+> **Stand: frühe Entwicklung.** Verba sammelt Wörter aus jeder App;
+> Offline-Wörterbücher folgen mit der nächsten Version. Die Funktionen unten
+> kommen Meilenstein für Meilenstein, siehe
+> [Roadmap](../../issues?q=label%3Amilestone). Screenshots folgen bald.
 
 ## Funktionen
 
 Schon da:
 
+- **Wörter aus jeder App sammeln:** Text markieren und im Auswahlmenü
+  Verba wählen, an Verba teilen oder aus der Wörterbuch-Funktion eines
+  Readers schicken. Im Satz das gesuchte Wort antippen – Chinesisch und
+  Japanisch werden auch in Wörter zerlegt – und mit Satz, Buch und
+  Herkunfts-App speichern. Englische Wörter bekommen ihre Grundform
+  („running“ → „run“). Bis die Wörterbücher kommen, tippst du die
+  Übersetzung selbst ein.
+- **Vokabelliste** mit dem letzten Satz und der Quelle jedes Worts.
 - **Helles und dunkles Design**, wie im System oder von Hand gewählt.
 - **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
   Tippflächen. Auf Boox-E-Readern schlägt Verba ihn beim ersten Start vor.
@@ -28,11 +36,6 @@ Schon da:
 
 Geplant, in dieser Reihenfolge:
 
-- [ ] **Markieren → übersetzen → speichern** aus dem Textauswahl-Menü jeder
-  App: Wort, Grundform („running“ → „run“), Übersetzungen in deine Sprache,
-  eine kurze Definition und der Satz als Kontext. Sprachen ohne Leerzeichen
-  wie Chinesisch oder Japanisch werden in antippbare Wörter zerlegt. Verba
-  merkt sich die App und das Buch bzw. den Manga, den du liest.
 - [ ] **Offline-Wörterbücher pro Sprachpaar** aus Wiktionary und anderen
   freien Wörterbüchern – zuerst Englisch → Deutsch, weitere Paare folgen.
 - [ ] **Vokabelliste** mit Suche, Filtern, Bearbeiten und Zusammenführen von
@@ -44,6 +47,21 @@ Geplant, in dieser Reihenfolge:
 - [ ] **Satzübersetzung** (optional, offline wenn machbar).
 - [ ] **Export und Backup:** CSV, JSON, AnkiDroid.
 - [ ] **Startbildschirm-Widget** „Vokabel des Tages“.
+
+## Verba benutzen
+
+Verba taucht an drei Stellen auf:
+
+- **Auswahlmenü:** Text markieren und im Menü „Verba“ wählen (oft unter ⋮).
+  Das klappt in Apps, die nach Text-Werkzeugen suchen, z. B. Chrome oder
+  Firefox; manche Apps bieten es nicht an.
+- **Teilen:** Text markieren → Teilen → „In Verba speichern“. Geht in fast
+  jeder App.
+- **Lese-Apps mit externem Wörterbuch:** Kann dein Reader Wörter an
+  ColorDict oder Aard 2 schicken, wähle eines davon als Wörterbuch – das
+  Wort öffnet sich dann in Verba.
+
+Deine eigene Sprache wählst du einmal unter Einstellungen → Übersetzen in.
 
 ## Datenschutz
 

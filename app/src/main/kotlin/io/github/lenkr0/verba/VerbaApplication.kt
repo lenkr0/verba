@@ -2,7 +2,10 @@ package io.github.lenkr0.verba
 
 import android.app.Application
 import android.content.Context
+import io.github.lenkr0.verba.data.VerbaDatabase
+import io.github.lenkr0.verba.data.VocabRepository
 import io.github.lenkr0.verba.device.EInkDevices
+import io.github.lenkr0.verba.language.Languages
 import io.github.lenkr0.verba.settings.SettingsRepository
 import io.github.lenkr0.verba.settings.SharedPreferencesStore
 
@@ -20,7 +23,10 @@ class VerbaApplication : Application() {
 class AppContainer(context: Context) {
     val settings = SettingsRepository(
         SharedPreferencesStore(context.getSharedPreferences("settings", Context.MODE_PRIVATE)),
+        defaultTargetLanguage = Languages.defaultTarget(),
     )
+    val database: VerbaDatabase by lazy { VerbaDatabase.create(context) }
+    val vocabulary: VocabRepository by lazy { VocabRepository(database) }
     val isEInkDevice: Boolean = EInkDevices.isCurrentDevice()
 }
 
