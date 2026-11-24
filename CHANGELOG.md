@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.5.0] – 2026-11-24
+
+### Review
+
+- **Flashcards from your own sentences:** the card shows the sentence with
+  a gap where the word was; "Show hint" reveals the translation. The answer
+  shows the word, its translation and definition. Words saved without a
+  sentence ask for the word by its meaning.
+- **Spaced repetition with FSRS-6**, the scheduler Anki uses, ported from
+  the reference implementation and tested against its numbers. New words
+  go through two short steps (1 and 10 minutes); after that each rating
+  plans the next review for when you're about to forget the word. Every
+  rating button shows its interval.
+- **Daily limits:** 20 new words and 200 reviews a day by default, changed
+  under Settings → Review. A day starts at 4 a.m.
+- **Undo** the last rating; edit a word right from its card.
+- Words with several sentences show them **in turn**.
+- The home screen shows what is due; the word list can be **filtered by
+  learning status** (new, learning, known – known means remembered for at
+  least three weeks); each word's page shows its progress and can reset it.
+- **E-ink mode:** no animation when the answer appears, larger rating
+  buttons.
+
+### Good to know
+
+- Reviews are logged separately from the words (date, rating, the sentence
+  shown), ready for export and sync later; see `docs/data-format.md`.
+- Updating keeps all your words: the database moves to version 2 on first
+  start.
+
 ## [0.4.0] – 2026-11-24
 
 ### Your word list

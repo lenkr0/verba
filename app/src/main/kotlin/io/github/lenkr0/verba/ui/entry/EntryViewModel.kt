@@ -9,9 +9,11 @@ import io.github.lenkr0.verba.data.ContextWithSource
 import io.github.lenkr0.verba.data.Deletions
 import io.github.lenkr0.verba.data.EntryEntity
 import io.github.lenkr0.verba.data.PendingDeletion
+import io.github.lenkr0.verba.data.ReviewCardEntity
 import io.github.lenkr0.verba.data.UpdateResult
 import io.github.lenkr0.verba.data.VocabRepository
 import io.github.lenkr0.verba.dictionary.DictionaryLookup
+import io.github.lenkr0.verba.review.ReviewRepository
 import io.github.lenkr0.verba.settings.SettingsRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,12 +29,17 @@ class EntryViewModel(
     private val dictionary: DictionaryLookup,
     private val settings: SettingsRepository,
     private val deletions: Deletions,
+    private val review: ReviewRepository,
 ) : ViewModel() {
     val entry: StateFlow<EntryEntity?> =
         vocabulary.entry(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val contexts: StateFlow<List<ContextWithSource>> =
         vocabulary.contexts(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Learning progress; null while the word is new. */
+    val card: StateFlow<ReviewCardEntity?> =
+        review.card(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     var lemma by mutableStateOf("")
         private set
@@ -89,6 +96,10 @@ class EntryViewModel(
             deletions.offer(PendingDeletion(id, current.lemma, token))
             onDeleted()
         }
+    }
+
+    fun resetProgress() {
+        viewModelScope.launch { review.reset(id) }
     }
 
     fun deleteContext(contextId: String) {

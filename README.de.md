@@ -12,8 +12,9 @@ Sprachpaar gleich. Die Wörterbücher funktionieren offline, die App hat
 keine Werbung, kein Tracking und braucht keine Google-Play-Dienste.
 Ein E-Ink-Modus macht sie auf E-Readern wie dem Boox Go 7 angenehm.
 
-> **Stand: frühe Entwicklung.** Verba sammelt Wörter aus jeder App und
-> schlägt sie in Offline-Wörterbüchern nach, die du in der App lädst. Die Funktionen unten
+> **Stand: frühe Entwicklung.** Verba sammelt Wörter aus jeder App,
+> schlägt sie in Offline-Wörterbüchern nach, die du in der App lädst, und
+> lässt dich sie mit verteilter Wiederholung lernen. Die Funktionen unten
 > kommen Meilenstein für Meilenstein, siehe
 > [Roadmap](../../issues?q=label%3Amilestone). Screenshots folgen bald.
 
@@ -34,10 +35,18 @@ Schon da:
   längsten Treffer in Sprachen ohne Leerzeichen; gibt es noch kein
   Wörterbuch in deine Sprache, zeigt es das englische und sagt das dazu.
 - **Vokabelliste** mit Suche (Wörter, Übersetzungen, Sätze, Bücher),
-  Filtern nach Sprache und Buch und einer Seite pro Wort: bearbeiten, alle
-  Sätze sehen, ein Wort oder einen einzelnen Satz löschen (mit Rückgängig)
-  und Duplikate zusammenführen – Verba weist auf wahrscheinliche hin
+  Filtern nach Sprache, Buch und Lernstand (neu, lernend, bekannt) und
+  einer Seite pro Wort: bearbeiten, alle Sätze und den Lernfortschritt
+  sehen, ein Wort oder einen einzelnen Satz löschen (mit Rückgängig) und
+  Duplikate zusammenführen – Verba weist auf wahrscheinliche hin
   („running“ und „run“).
+- **Wiederholen mit verteilter Wiederholung** (FSRS-6, der Planer, den
+  auch Anki nutzt): Die Karte zeigt einen deiner Sätze mit einer Lücke, wo
+  das Wort stand – „Hinweis zeigen“ blendet die Übersetzung ein. Bewerte
+  mit Nochmal, Schwer, Gut oder Einfach; jeder Knopf sagt, wann das Wort
+  wiederkommt. Wörter mit mehreren Sätzen zeigen sie abwechselnd.
+  Tageslimits für neue Wörter und Wiederholungen, und die letzte Bewertung
+  lässt sich zurücknehmen.
 - **Helles und dunkles Design**, wie im System oder von Hand gewählt.
 - **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
   Tippflächen. Auf Boox-E-Readern schlägt Verba ihn beim ersten Start vor.
@@ -45,8 +54,6 @@ Schon da:
 
 Geplant, in dieser Reihenfolge:
 
-- [ ] **Lernen** mit Karteikarten und FSRS-Wiederholungsplanung; die Karte
-  zeigt deinen Satz mit einer Lücke.
 - [ ] **Manga und Bilder:** Texterkennung auf Screenshots (Teilen oder
   Schnelleinstellungs-Kachel); ein erkanntes Wort antippen und nachschlagen.
 - [ ] **Satzübersetzung** (optional, offline wenn machbar).

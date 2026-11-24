@@ -75,4 +75,32 @@ data class EntryListItem(
     @ColumnInfo(name = "latest_word_end") val latestWordEnd: Int?,
     @ColumnInfo(name = "latest_source") val latestSource: String?,
     @ColumnInfo(name = "context_count") val contextCount: Int,
+    /** A [LearningStatus] code. */
+    @ColumnInfo(name = "learning_status") val learningStatus: Int = LearningStatus.New.code,
 )
+
+/** How well a word is learned, for the word list filter. */
+enum class LearningStatus(val code: Int) {
+    /** Never reviewed. */
+    New(0),
+
+    /** Being reviewed, not yet remembered for weeks. */
+    Learning(1),
+
+    /** Remembered for at least [KNOWN_STABILITY_DAYS] days (FSRS stability). */
+    Known(2),
+    ;
+
+    companion object {
+        /** Anki calls cards with intervals of three weeks or more "mature". */
+        const val KNOWN_STABILITY_DAYS = 21.0
+
+        fun of(code: Int) = entries.firstOrNull { it.code == code } ?: New
+
+        fun of(card: ReviewCardEntity?): LearningStatus = when {
+            card == null -> New
+            card.state == 2 && card.stability >= KNOWN_STABILITY_DAYS -> Known
+            else -> Learning
+        }
+    }
+}

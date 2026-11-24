@@ -27,7 +27,12 @@ data class Capture(
 data class SaveResult(val entryId: String, val addedToExisting: Boolean)
 
 /** What the word list shows; every part is optional. */
-data class ListFilter(val query: String = "", val language: String? = null, val sourceId: String? = null)
+data class ListFilter(
+    val query: String = "",
+    val language: String? = null,
+    val sourceId: String? = null,
+    val status: LearningStatus? = null,
+)
 
 sealed interface UpdateResult {
     data object Saved : UpdateResult
@@ -45,9 +50,10 @@ class VocabRepository(
     private val newId: () -> String = { UUID.randomUUID().toString() },
 ) {
     private val dao = db.vocabDao()
+    private val reviewDao = db.reviewDao()
 
     fun entryList(filter: ListFilter = ListFilter()): Flow<List<EntryListItem>> =
-        dao.entryList(likePattern(filter.query), filter.language, filter.sourceId)
+        dao.entryList(likePattern(filter.query), filter.language, filter.sourceId, filter.status?.code)
 
     fun sourceCounts(): Flow<List<SourceCount>> = dao.sourceCounts()
 
@@ -103,8 +109,9 @@ class VocabRepository(
     }
 
     /**
-     * Moves all sentences of [fromId] to [intoId], adds its translations that
-     * [intoId] doesn't have, and marks [fromId] deleted.
+     * Moves all sentences and reviews of [fromId] to [intoId], adds its
+     * translations that [intoId] doesn't have, and marks [fromId] deleted.
+     * [intoId] keeps its learning progress, or takes over [fromId]'s if it has none.
      */
     suspend fun merge(fromId: String, intoId: String) = db.withTransaction { mergeNow(fromId, intoId, now()) }
 
@@ -113,6 +120,12 @@ class VocabRepository(
         val from = dao.entryNow(fromId) ?: return
         val into = dao.entryNow(intoId) ?: return
         dao.moveContexts(fromId, intoId, time)
+        // The review history moves along; the progress too, unless the target has its own
+        reviewDao.moveLogs(fromId, intoId, time)
+        reviewDao.card(fromId)?.let { card ->
+            if (reviewDao.card(intoId) == null) reviewDao.upsert(card.copy(entryId = intoId, updatedAt = time))
+            reviewDao.markCardDeleted(fromId, time)
+        }
         dao.update(
             into.copy(
                 translation = combineTranslations(into.translation, from.translation),

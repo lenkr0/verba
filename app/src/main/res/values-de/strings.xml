@@ -122,4 +122,71 @@
     <string name="entry_merge_confirm">Zusammenführen</string>
 
     <string name="error_no_browser">Keine App gefunden, die diesen Link öffnen kann.</string>
+    <!-- Wiederholen -->
+    <string name="review_title">Wiederholen</string>
+    <string name="review_start">Starten</string>
+    <plurals name="home_review_due">
+        <item quantity="one">%d Wort zu wiederholen</item>
+        <item quantity="other">%d Wörter zu wiederholen</item>
+    </plurals>
+    <string name="review_nothing_due">Gerade nichts zu wiederholen</string>
+    <string name="review_next">Als Nächstes: %1$s</string>
+    <string name="status_new">Neu</string>
+    <string name="status_learning">Lernend</string>
+    <string name="status_known">Bekannt</string>
+    <plurals name="review_left">
+        <item quantity="one">noch %d</item>
+        <item quantity="other">noch %d</item>
+    </plurals>
+    <string name="review_show_answer">Antwort zeigen</string>
+    <string name="review_show_hint">Hinweis zeigen</string>
+    <string name="review_prompt_meaning">Welches Wort bedeutet:</string>
+    <string name="review_prompt_word">Was bedeutet dieses Wort?</string>
+    <string name="review_no_translation">Noch keine Übersetzung gespeichert.</string>
+    <string name="rating_again">Nochmal</string>
+    <string name="rating_hard">Schwer</string>
+    <string name="rating_good">Gut</string>
+    <string name="rating_easy">Einfach</string>
+    <string name="rating_with_interval">%1$s, wieder in %2$s</string>
+    <string name="interval_minutes">%d Min.</string>
+    <string name="interval_hours">%d Std.</string>
+    <string name="interval_days">%d Tg.</string>
+    <string name="interval_months">%s Mon.</string>
+    <string name="interval_years">%s J.</string>
+    <string name="review_done_title">Für jetzt geschafft</string>
+    <plurals name="review_done_count">
+        <item quantity="one">Du hast %d Wort wiederholt.</item>
+        <item quantity="other">Du hast %d Wörter wiederholt.</item>
+    </plurals>
+    <plurals name="review_new_waiting">
+        <item quantity="one">%d neues Wort wartet auf die nächsten Tage. Das Tageslimit kannst du in den Einstellungen ändern.</item>
+        <item quantity="other">%d neue Wörter warten auf die nächsten Tage. Das Tageslimit kannst du in den Einstellungen ändern.</item>
+    </plurals>
+    <string name="review_empty_title">Noch keine Wörter</string>
+    <string name="review_empty_body">Speichere beim Lesen Wörter, dann kannst du sie hier wiederholen.</string>
+    <string name="review_continue">Weiter</string>
+    <string name="review_edit">Wort bearbeiten</string>
+    <string name="review_undo">Letzte Bewertung rückgängig machen</string>
+
+    <!-- Lernstand auf der Wortseite -->
+    <string name="entry_learning">Lernstand</string>
+    <string name="entry_status_new">Noch nicht wiederholt</string>
+    <string name="entry_status_next">Nächste Wiederholung %1$s</string>
+    <plurals name="entry_status_reviews">
+        <item quantity="one">Einmal wiederholt</item>
+        <item quantity="other">%d-mal wiederholt</item>
+    </plurals>
+    <string name="entry_status_due">Zur Wiederholung fällig</string>
+    <string name="entry_reset">Fortschritt zurücksetzen</string>
+    <string name="entry_reset_title">Fortschritt für „%1$s“ zurücksetzen?</string>
+    <string name="entry_reset_body">Das Wort zählt wieder als neu. Der Verlauf der Wiederholungen bleibt erhalten.</string>
+    <string name="entry_reset_confirm">Zurücksetzen</string>
+
+    <!-- Einstellungen: Wiederholen -->
+    <string name="settings_section_review">Wiederholen</string>
+    <string name="settings_new_per_day">Neue Wörter pro Tag</string>
+    <string name="settings_new_per_day_hint">Wörter, die du pro Tag zum ersten Mal wiederholst.</string>
+    <string name="settings_reviews_per_day">Wiederholungen pro Tag</string>
+    <string name="settings_reviews_per_day_hint">Fällige Wörter darüber hinaus warten auf den nächsten Tag.</string>
+    <string name="action_ok">OK</string>
 </resources>

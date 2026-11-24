@@ -6,6 +6,8 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -14,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,12 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.lenkr0.verba.BuildConfig
 import io.github.lenkr0.verba.R
 import io.github.lenkr0.verba.settings.AppLanguage
+import io.github.lenkr0.verba.settings.AppSettings
 import io.github.lenkr0.verba.settings.SettingsRepository
 import io.github.lenkr0.verba.settings.ThemeMode
 import io.github.lenkr0.verba.language.Languages
@@ -61,6 +67,7 @@ fun SettingsScreen(
     val language = remember { AppLanguage.current(context) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
     var showTargetDialog by rememberSaveable { mutableStateOf(false) }
+    var editLimit by rememberSaveable { mutableStateOf<Limit?>(null) }
 
     Scaffold(
         topBar = {
@@ -115,6 +122,18 @@ fun SettingsScreen(
                 onClick = { showLanguageDialog = true },
             )
 
+            SectionHeader(stringResource(R.string.settings_section_review))
+            ClickRow(
+                title = stringResource(R.string.settings_new_per_day),
+                summary = settings.newPerDay.toString(),
+                onClick = { editLimit = Limit.New },
+            )
+            ClickRow(
+                title = stringResource(R.string.settings_reviews_per_day),
+                summary = settings.reviewsPerDay.toString(),
+                onClick = { editLimit = Limit.Reviews },
+            )
+
             SectionHeader(stringResource(R.string.settings_section_about))
             InfoRow(stringResource(R.string.settings_version), BuildConfig.VERSION_NAME)
             ClickRow(
@@ -146,6 +165,19 @@ fun SettingsScreen(
         )
     }
 
+    editLimit?.let { limit ->
+        NumberDialog(
+            title = stringResource(limit.title),
+            hint = stringResource(limit.hint),
+            value = if (limit == Limit.New) settings.newPerDay else settings.reviewsPerDay,
+            onConfirm = { value ->
+                editLimit = null
+                if (limit == Limit.New) repository.setNewPerDay(value) else repository.setReviewsPerDay(value)
+            },
+            onDismiss = { editLimit = null },
+        )
+    }
+
     if (showLanguageDialog) {
         LanguageDialog(
             current = language,
@@ -156,6 +188,39 @@ fun SettingsScreen(
             onDismiss = { showLanguageDialog = false },
         )
     }
+}
+
+private enum class Limit(@StringRes val title: Int, @StringRes val hint: Int) {
+    New(R.string.settings_new_per_day, R.string.settings_new_per_day_hint),
+    Reviews(R.string.settings_reviews_per_day, R.string.settings_reviews_per_day_hint),
+}
+
+@Composable
+private fun NumberDialog(title: String, hint: String, value: Int, onConfirm: (Int) -> Unit, onDismiss: () -> Unit) {
+    var text by rememberSaveable { mutableStateOf(value.toString()) }
+    val number = text.toIntOrNull()?.takeIf { it in 0..AppSettings.MAX_PER_DAY }
+    VerbaAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(hint)
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { new -> text = new.filter(Char::isDigit).take(4) },
+                    singleLine = true,
+                    isError = number == null,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { number?.let(onConfirm) }, enabled = number != null) {
+                Text(stringResource(R.string.action_ok))
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
+    )
 }
 
 private val ThemeMode.label: Int

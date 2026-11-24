@@ -11,10 +11,15 @@ import io.github.lenkr0.verba.dictionary.DictionaryStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import java.io.File
 import io.github.lenkr0.verba.data.VocabRepository
 import io.github.lenkr0.verba.device.EInkDevices
 import io.github.lenkr0.verba.language.Languages
+import io.github.lenkr0.verba.review.ReviewLimits
+import io.github.lenkr0.verba.review.ReviewRepository
 import io.github.lenkr0.verba.settings.SettingsRepository
 import io.github.lenkr0.verba.settings.SharedPreferencesStore
 
@@ -36,6 +41,10 @@ class AppContainer(context: Context) {
     )
     val database: VerbaDatabase by lazy { VerbaDatabase.create(context) }
     val vocabulary: VocabRepository by lazy { VocabRepository(database) }
+    val review: ReviewRepository by lazy { ReviewRepository(database) }
+    val reviewLimits: Flow<ReviewLimits> = settings.settings
+        .map { ReviewLimits(it.newPerDay, it.reviewsPerDay) }
+        .distinctUntilChanged()
     val deletions = Deletions()
 
     /** Lives as long as the app process; for work that outlives a screen, like downloads. */

@@ -45,6 +45,10 @@ class SettingsRepository(
 
     fun setTargetLanguage(language: String) = save(KEY_TARGET_LANGUAGE to language)
 
+    fun setNewPerDay(count: Int) = save(KEY_NEW_PER_DAY to count.coerceIn(0, AppSettings.MAX_PER_DAY).toString())
+
+    fun setReviewsPerDay(count: Int) = save(KEY_REVIEWS_PER_DAY to count.coerceIn(0, AppSettings.MAX_PER_DAY).toString())
+
     /** Moves [language] to the front of the recent languages (keeps at most [MAX_RECENT]). */
     fun noteLanguageUsed(language: String) {
         val recent = (listOf(language) + state.value.recentLanguages.filter { it != language }).take(MAX_RECENT)
@@ -62,6 +66,8 @@ class SettingsRepository(
         eInkPromptAnswered = store.boolean(KEY_EINK_PROMPT_ANSWERED) ?: false,
         targetLanguage = store.string(KEY_TARGET_LANGUAGE) ?: defaultTargetLanguage,
         recentLanguages = store.string(KEY_RECENT_LANGUAGES)?.split(',')?.filter { it.isNotBlank() }.orEmpty(),
+        newPerDay = store.string(KEY_NEW_PER_DAY)?.toIntOrNull() ?: AppSettings.DEFAULT_NEW_PER_DAY,
+        reviewsPerDay = store.string(KEY_REVIEWS_PER_DAY)?.toIntOrNull() ?: AppSettings.DEFAULT_REVIEWS_PER_DAY,
     )
 
     private companion object {
@@ -70,6 +76,8 @@ class SettingsRepository(
         const val KEY_EINK_PROMPT_ANSWERED = "eink_prompt_answered"
         const val KEY_TARGET_LANGUAGE = "target_language"
         const val KEY_RECENT_LANGUAGES = "recent_languages"
+        const val KEY_NEW_PER_DAY = "new_per_day"
+        const val KEY_REVIEWS_PER_DAY = "reviews_per_day"
         const val MAX_RECENT = 5
     }
 }

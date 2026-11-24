@@ -28,6 +28,20 @@ class SettingsRepositoryTest {
     }
 
     @Test
+    fun dailyLimitsAreStoredWithinBounds() {
+        val store = InMemoryStore()
+        SettingsRepository(store).apply {
+            setNewPerDay(5)
+            setReviewsPerDay(-3)
+        }
+        val reloaded = SettingsRepository(store).settings.value
+        assertEquals(5, reloaded.newPerDay)
+        assertEquals(0, reloaded.reviewsPerDay)
+        SettingsRepository(store).setReviewsPerDay(1_000_000)
+        assertEquals(AppSettings.MAX_PER_DAY, SettingsRepository(store).settings.value.reviewsPerDay)
+    }
+
+    @Test
     fun unknownStoredThemeFallsBackToSystem() {
         assertEquals(ThemeMode.System, ThemeMode.fromStorage("sepia"))
         assertEquals(ThemeMode.System, ThemeMode.fromStorage(null))

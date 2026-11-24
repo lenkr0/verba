@@ -27,6 +27,8 @@ import io.github.lenkr0.verba.ui.home.HomeActions
 import io.github.lenkr0.verba.ui.home.HomeScreen
 import io.github.lenkr0.verba.ui.home.HomeState
 import io.github.lenkr0.verba.ui.home.HomeViewModel
+import io.github.lenkr0.verba.ui.review.ReviewScreen
+import io.github.lenkr0.verba.ui.review.ReviewViewModel
 import io.github.lenkr0.verba.ui.settings.DictionariesScreen
 import io.github.lenkr0.verba.ui.settings.SettingsScreen
 import io.github.lenkr0.verba.ui.theme.LocalEInkMode
@@ -43,6 +45,9 @@ data object DictionariesRoute : NavKey
 
 @Serializable
 data class EntryRoute(val id: String) : NavKey
+
+@Serializable
+data object ReviewRoute : NavKey
 
 /** Where the app opens: the home screen, or straight to the dictionaries (from the capture sheet). */
 enum class StartScreen { Home, Dictionaries }
@@ -75,20 +80,25 @@ fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Ho
         predictivePopTransitionSpec = if (eInk) noPredictiveTransition else defaultPredictivePopTransitionSpec(),
         entryProvider = entryProvider {
             entry<HomeRoute> {
-                val viewModel = viewModel { HomeViewModel(container.vocabulary, container.deletions) }
+                val viewModel = viewModel {
+                    HomeViewModel(container.vocabulary, container.deletions, container.review, container.reviewLimits)
+                }
                 val entries by viewModel.entries.collectAsStateWithLifecycle()
                 val filter by viewModel.filter.collectAsStateWithLifecycle()
                 val languages by viewModel.languages.collectAsStateWithLifecycle()
                 val sources by viewModel.sources.collectAsStateWithLifecycle()
                 val pending by viewModel.pendingDeletion.collectAsStateWithLifecycle()
+                val review by viewModel.reviewCounts.collectAsStateWithLifecycle()
                 HomeScreen(
-                    HomeState(entries, filter, languages, sources, pending),
+                    HomeState(entries, filter, languages, sources, pending, review),
                     HomeActions(
                         onOpenSettings = { backStack.add(SettingsRoute) },
                         onOpenEntry = { backStack.add(EntryRoute(it)) },
                         onQuery = viewModel::setQuery,
                         onToggleLanguage = viewModel::toggleLanguage,
                         onToggleSource = viewModel::toggleSource,
+                        onToggleStatus = viewModel::toggleStatus,
+                        onStartReview = { backStack.add(ReviewRoute) },
                         onUndo = viewModel::undo,
                         onUndoDismissed = viewModel::dismissUndo,
                     ),
@@ -96,7 +106,14 @@ fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Ho
             }
             entry<EntryRoute> { key ->
                 val viewModel = viewModel(key = key.id) {
-                    EntryViewModel(key.id, container.vocabulary, container.dictionaryLookup, container.settings, container.deletions)
+                    EntryViewModel(
+                        key.id,
+                        container.vocabulary,
+                        container.dictionaryLookup,
+                        container.settings,
+                        container.deletions,
+                        container.review,
+                    )
                 }
                 EntryScreen(
                     viewModel = viewModel,
@@ -106,6 +123,14 @@ fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Ho
                         if (backStack.lastOrNull() == key) backStack.removeLastOrNull()
                         backStack.add(EntryRoute(id))
                     },
+                )
+            }
+            entry<ReviewRoute> {
+                val viewModel = viewModel { ReviewViewModel(container.review, container.reviewLimits) }
+                ReviewScreen(
+                    viewModel = viewModel,
+                    onBack = { if (backStack.lastOrNull() == ReviewRoute) backStack.removeLastOrNull() },
+                    onEdit = { backStack.add(EntryRoute(it)) },
                 )
             }
             entry<SettingsRoute> {

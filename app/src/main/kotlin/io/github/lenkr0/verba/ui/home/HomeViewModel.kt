@@ -5,12 +5,17 @@ import androidx.lifecycle.viewModelScope
 import io.github.lenkr0.verba.data.Deletions
 import io.github.lenkr0.verba.data.EntryListItem
 import io.github.lenkr0.verba.data.LanguageCount
+import io.github.lenkr0.verba.data.LearningStatus
 import io.github.lenkr0.verba.data.ListFilter
 import io.github.lenkr0.verba.data.PendingDeletion
 import io.github.lenkr0.verba.data.SourceCount
 import io.github.lenkr0.verba.data.VocabRepository
+import io.github.lenkr0.verba.review.ReviewCounts
+import io.github.lenkr0.verba.review.ReviewLimits
+import io.github.lenkr0.verba.review.ReviewRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +29,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val vocabulary: VocabRepository,
     private val deletions: Deletions,
+    review: ReviewRepository,
+    reviewLimits: Flow<ReviewLimits>,
 ) : ViewModel() {
     private val filterState = MutableStateFlow(ListFilter())
     val filter: StateFlow<ListFilter> = filterState.asStateFlow()
@@ -43,6 +50,9 @@ class HomeViewModel(
 
     val pendingDeletion: StateFlow<PendingDeletion?> = deletions.pending
 
+    val reviewCounts: StateFlow<ReviewCounts?> =
+        review.counts(reviewLimits).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     fun setQuery(query: String) = filterState.update { it.copy(query = query) }
 
     fun toggleLanguage(language: String) =
@@ -50,6 +60,9 @@ class HomeViewModel(
 
     fun toggleSource(sourceId: String) =
         filterState.update { it.copy(sourceId = if (it.sourceId == sourceId) null else sourceId) }
+
+    fun toggleStatus(status: LearningStatus) =
+        filterState.update { it.copy(status = if (it.status == status) null else status) }
 
     fun undo(deletion: PendingDeletion) {
         deletions.clear()

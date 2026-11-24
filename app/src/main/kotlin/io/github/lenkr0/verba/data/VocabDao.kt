@@ -31,7 +31,8 @@ interface VocabDao {
     /**
      * The word list, newest first. All filters are optional: [pattern] is a
      * LIKE pattern searched in base form, translation, definition, the words
-     * as they appeared, sentences and book titles.
+     * as they appeared, sentences and book titles; [status] is a
+     * [LearningStatus] code.
      */
     @Query(
         """
@@ -40,8 +41,11 @@ interface VocabDao {
             c.word_start AS latest_word_start,
             c.word_end AS latest_word_end,
             s.title AS latest_source,
-            (SELECT COUNT(*) FROM contexts cc WHERE cc.entry_id = e.id AND cc.deleted_at IS NULL) AS context_count
+            (SELECT COUNT(*) FROM contexts cc WHERE cc.entry_id = e.id AND cc.deleted_at IS NULL) AS context_count,
+            CASE WHEN r.entry_id IS NULL THEN 0 WHEN r.state = 2 AND r.stability >= :knownDays THEN 2 ELSE 1 END
+                AS learning_status
         FROM entries e
+        LEFT JOIN review_cards r ON r.entry_id = e.id AND r.deleted_at IS NULL
         LEFT JOIN contexts c ON c.id = (
             SELECT c2.id FROM contexts c2
             WHERE c2.entry_id = e.id AND c2.deleted_at IS NULL
@@ -51,6 +55,8 @@ interface VocabDao {
         LEFT JOIN sources s ON s.id = c.source_id AND s.deleted_at IS NULL
         WHERE e.deleted_at IS NULL
             AND (:language IS NULL OR e.language = :language)
+            AND (:status IS NULL OR :status =
+                CASE WHEN r.entry_id IS NULL THEN 0 WHEN r.state = 2 AND r.stability >= :knownDays THEN 2 ELSE 1 END)
             AND (:sourceId IS NULL OR EXISTS (
                 SELECT 1 FROM contexts x WHERE x.entry_id = e.id AND x.deleted_at IS NULL AND x.source_id = :sourceId))
             AND (:pattern IS NULL
@@ -64,7 +70,13 @@ interface VocabDao {
         ORDER BY e.updated_at DESC
         """,
     )
-    fun entryList(pattern: String?, language: String?, sourceId: String?): Flow<List<EntryListItem>>
+    fun entryList(
+        pattern: String?,
+        language: String?,
+        sourceId: String?,
+        status: Int?,
+        knownDays: Double = LearningStatus.KNOWN_STABILITY_DAYS,
+    ): Flow<List<EntryListItem>>
 
     @Query(
         """
