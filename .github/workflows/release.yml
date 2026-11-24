@@ -28,6 +28,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
+      - name: NDK and CMake (text recognition; versions as in app/build.gradle.kts)
+        run: |
+          # yes accepts licenses; without pipefail its broken pipe doesn't fail the step
+          set +o pipefail
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;30.0.16248370" "cmake;4.1.2" > /dev/null
+
       - name: Version from gradle.properties, matching the tag
         run: |
           version=$(sed -n 's/^verba\.version=//p' gradle.properties)
