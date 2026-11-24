@@ -33,7 +33,10 @@ Already there:
   "gave up" → "give up"), Japanese conjugations (食べた → 食べる) and the
   longest match in languages without spaces; where there's no dictionary
   into your language yet, it shows the English one and says so.
-- **Word list** with each word's latest sentence and source.
+- **Word list** with search (words, translations, sentences, books),
+  filters by language and book, and a page per word: edit it, see all its
+  sentences, delete a word or a single sentence (with undo), and merge
+  duplicates – Verba points out likely ones ("running" and "run").
 - **Light and dark theme**, following the system or set by hand.
 - **E-ink mode:** pure black and white, no animations, larger touch targets.
   On Boox e-readers Verba suggests it on first start.
@@ -41,8 +44,6 @@ Already there:
 
 Planned, in this order:
 
-- [ ] **Word list** with search, filters, editing and merging duplicates by
-  base form.
 - [ ] **Review** with flashcards and FSRS spaced repetition; the card shows
   your sentence with a gap.
 - [ ] **Manga and images:** text recognition on screenshots (share or
