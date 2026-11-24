@@ -22,3 +22,4 @@ keystore.properties
 
 # Generated dictionary packs (built in CI, published as release assets)
 /tools/dictionary/out/
+__pycache__/

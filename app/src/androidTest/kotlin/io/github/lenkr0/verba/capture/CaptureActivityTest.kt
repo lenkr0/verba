@@ -3,7 +3,9 @@ package io.github.lenkr0.verba.capture
 import android.content.Context
 import android.content.Intent
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -14,6 +16,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.lenkr0.verba.appContainer
+import io.github.lenkr0.verba.dictionary.TestPacks
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -21,6 +24,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class CaptureActivityTest {
@@ -38,6 +42,18 @@ class CaptureActivityTest {
             setTargetLanguage("de")
             noteLanguageUsed("en")
         }
+        // Most tests run without dictionaries; the dictionary tests install their own
+        runBlocking { container.dictionaryStore.installedNow().forEach { container.dictionaryStore.delete(it.id) } }
+    }
+
+    private fun installTestDictionary() = runBlocking {
+        val file = File(context.cacheDir, "test-en-de.tmp")
+        container.dictionaryStore.install(TestPacks.create(file, "en", "de", TestPacks.englishGerman))
+    }
+
+    /** The dictionary is read on a background thread that Compose's idling doesn't track. */
+    private fun waitForText(tag: String, text: String) = compose.waitUntil(timeoutMillis = 5_000) {
+        compose.onAllNodes(hasTestTag(tag) and hasText(text)).fetchSemanticsNodes().isNotEmpty()
     }
 
     private fun launch(action: String, text: String): ActivityScenario<CaptureActivity> {
@@ -98,6 +114,27 @@ class CaptureActivityTest {
         compose.onNodeWithTag(CaptureTags.LEMMA).assert(hasText("walk"))
         compose.onNodeWithTag(CaptureTags.SAVE).performClick()
         compose.waitUntil(timeoutMillis = 5_000) { savedEntries().singleOrNull()?.contextCount == 2 }
+    }
+
+    @Test
+    fun dictionaryFillsTheSheet() {
+        installTestDictionary()
+        launch(Intent.ACTION_PROCESS_TEXT, "She was running late again.")
+        compose.onNodeWithText("running").performClick()
+        waitForText(CaptureTags.TRANSLATION, "laufen; rennen")
+        compose.onNodeWithTag(CaptureTags.LEMMA).assert(hasText("run"))
+        compose.onNodeWithTag(CaptureTags.DICTIONARY).assertExists()
+        compose.onNodeWithTag(CaptureTags.SAVE).performClick()
+        waitForSaved(1)
+        assertEquals("laufen; rennen", savedEntries().single().entry.translation)
+    }
+
+    @Test
+    fun withoutDictionaryTheSheetOffersToGetOne() {
+        launch(Intent.ACTION_PROCESS_TEXT, "She was running late again.")
+        compose.onNodeWithText("running").performClick()
+        val getDictionaries = context.getString(io.github.lenkr0.verba.R.string.capture_get_dictionaries)
+        compose.waitUntil(timeoutMillis = 5_000) { compose.onAllNodesWithText(getDictionaries).fetchSemanticsNodes().isNotEmpty() }
     }
 
     @Test

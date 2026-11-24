@@ -20,7 +20,9 @@ import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
 import io.github.lenkr0.verba.AppContainer
+import io.github.lenkr0.verba.language.Languages
 import io.github.lenkr0.verba.ui.home.HomeScreen
+import io.github.lenkr0.verba.ui.settings.DictionariesScreen
 import io.github.lenkr0.verba.ui.settings.SettingsScreen
 import io.github.lenkr0.verba.ui.theme.LocalEInkMode
 import kotlinx.serialization.Serializable
@@ -31,6 +33,12 @@ data object HomeRoute : NavKey
 @Serializable
 data object SettingsRoute : NavKey
 
+@Serializable
+data object DictionariesRoute : NavKey
+
+/** Where the app opens: the home screen, or straight to the dictionaries (from the capture sheet). */
+enum class StartScreen { Home, Dictionaries }
+
 private val noTransition: AnimatedContentTransitionScope<Scene<NavKey>>.() -> ContentTransform =
     { EnterTransition.None togetherWith ExitTransition.None }
 
@@ -38,8 +46,11 @@ private val noPredictiveTransition: AnimatedContentTransitionScope<Scene<NavKey>
     { EnterTransition.None togetherWith ExitTransition.None }
 
 @Composable
-fun VerbaNavigation(container: AppContainer) {
-    val backStack = rememberNavBackStack(HomeRoute)
+fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Home) {
+    val backStack = when (start) {
+        StartScreen.Home -> rememberNavBackStack(HomeRoute)
+        StartScreen.Dictionaries -> rememberNavBackStack(HomeRoute, SettingsRoute, DictionariesRoute)
+    }
     val eInk = LocalEInkMode.current
 
     // Predictive back works with or without animation: in E-ink mode the
@@ -60,7 +71,21 @@ fun VerbaNavigation(container: AppContainer) {
                 HomeScreen(entries = entries, onOpenSettings = { backStack.add(SettingsRoute) })
             }
             entry<SettingsRoute> {
-                SettingsScreen(repository = container.settings, onBack = { backStack.removeLastOrNull() })
+                val installed by container.dictionaryStore.installed.collectAsStateWithLifecycle()
+                SettingsScreen(
+                    repository = container.settings,
+                    suggestedTargets = (installed.map { it.targetLanguage } + Languages.defaultTarget() + "en").distinct(),
+                    onOpenDictionaries = { backStack.add(DictionariesRoute) },
+                    onBack = { backStack.removeLastOrNull() },
+                )
+            }
+            entry<DictionariesRoute> {
+                val settings by container.settings.settings.collectAsStateWithLifecycle()
+                DictionariesScreen(
+                    dictionaries = container.dictionaries,
+                    targetLanguage = settings.targetLanguage,
+                    onBack = { backStack.removeLastOrNull() },
+                )
             }
         },
     )

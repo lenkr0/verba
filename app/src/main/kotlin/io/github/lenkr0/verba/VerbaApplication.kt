@@ -3,6 +3,14 @@ package io.github.lenkr0.verba
 import android.app.Application
 import android.content.Context
 import io.github.lenkr0.verba.data.VerbaDatabase
+import io.github.lenkr0.verba.dictionary.Dictionaries
+import io.github.lenkr0.verba.dictionary.DictionaryDownloader
+import io.github.lenkr0.verba.dictionary.DictionaryLookup
+import io.github.lenkr0.verba.dictionary.DictionaryStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import java.io.File
 import io.github.lenkr0.verba.data.VocabRepository
 import io.github.lenkr0.verba.device.EInkDevices
 import io.github.lenkr0.verba.language.Languages
@@ -27,6 +35,16 @@ class AppContainer(context: Context) {
     )
     val database: VerbaDatabase by lazy { VerbaDatabase.create(context) }
     val vocabulary: VocabRepository by lazy { VocabRepository(database) }
+
+    /** Lives as long as the app process; for work that outlives a screen, like downloads. */
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    val dictionaryStore = DictionaryStore(File(context.filesDir, "dictionaries"))
+    val dictionaryLookup = DictionaryLookup(dictionaryStore)
+    val dictionaries = Dictionaries(
+        dictionaryStore,
+        DictionaryDownloader(dictionaryStore, userAgent = "Verba/${BuildConfig.VERSION_NAME}"),
+        scope,
+    )
     val isEInkDevice: Boolean = EInkDevices.isCurrentDevice()
 }
 

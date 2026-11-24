@@ -9,6 +9,11 @@ import io.github.lenkr0.verba.data.Capture
 import io.github.lenkr0.verba.data.ExistingEntry
 import io.github.lenkr0.verba.data.SaveResult
 import io.github.lenkr0.verba.data.VocabRepository
+import io.github.lenkr0.verba.dictionary.DictionaryEntry
+import io.github.lenkr0.verba.dictionary.DictionaryLookup
+import io.github.lenkr0.verba.dictionary.DictionarySense
+import io.github.lenkr0.verba.dictionary.LookupResult
+import io.github.lenkr0.verba.language.Languages
 import io.github.lenkr0.verba.language.Lemmatizer
 import io.github.lenkr0.verba.language.ScriptDetector
 import io.github.lenkr0.verba.language.Sentence
@@ -23,6 +28,16 @@ data class WordChoice(val sentence: Int, val token: Int) {
     companion object {
         val PHRASE = WordChoice(-1, -1)
     }
+}
+
+/** What the dictionary says about the chosen word. */
+sealed interface DictionaryState {
+    data object Idle : DictionaryState
+    data class Found(val result: LookupResult) : DictionaryState
+    data object NotFound : DictionaryState
+
+    /** No pack for the language pair (nor one into English). */
+    data object Unavailable : DictionaryState
 }
 
 data class CaptureUiState(
@@ -45,6 +60,7 @@ data class CaptureUiState(
     val titleSuggestions: List<String> = emptyList(),
     val sourceAppLabel: String? = null,
     val existing: ExistingEntry? = null,
+    val dictionary: DictionaryState = DictionaryState.Idle,
     val saving: Boolean = false,
 ) {
     val isSentenceMode: Boolean get() = sentences.isNotEmpty()
@@ -56,16 +72,28 @@ class CaptureViewModel(
     private val request: CaptureRequest,
     private val settings: SettingsRepository,
     private val vocabulary: VocabRepository,
+    private val dictionary: DictionaryLookup,
 ) : ViewModel() {
     var state by mutableStateOf(initialState())
         private set
 
-    val recentLanguages: List<String> get() = settings.settings.value.recentLanguages
+    /** Languages offered first when picking the text's language: recent ones, then those with a dictionary. */
+    val sourceSuggestions: List<String>
+        get() = (settings.settings.value.recentLanguages + dictionary.installed().map { it.sourceLanguage }).distinct()
 
-    // Fields the user typed into are not overwritten by values of a saved entry
+    /** Languages offered first when picking "translate into": those with a dictionary, the device language, English. */
+    val targetSuggestions: List<String>
+        get() = (dictionary.installed().map { it.targetLanguage } + Languages.defaultTarget() + "en").distinct()
+
+    // Fields the user typed into are not overwritten by the dictionary or a saved entry
+    private var lemmaEdited = false
     private var translationEdited = false
     private var definitionEdited = false
-    private var lookup: Job? = null
+    private var existingJob: Job? = null
+    private var lookupJob: Job? = null
+
+    /** The text from the chosen word to the end of its sentence, for phrases and longest matches. */
+    private var following: String = ""
 
     init {
         viewModelScope.launch {
@@ -76,7 +104,10 @@ class CaptureViewModel(
                 sourceTitle = state.sourceTitle.ifEmpty { last.orEmpty() },
             )
         }
-        refreshExisting(debounce = false)
+        if (state.hasWord) {
+            following = state.wordForm
+            lookUp()
+        }
     }
 
     private fun initialState(): CaptureUiState {
@@ -98,6 +129,7 @@ class CaptureViewModel(
         val cleared = base.copy(
             language = language, choice = null, wordForm = "", lemma = "", translation = "",
             definition = "", sentence = "", wordStart = -1, wordEnd = -1, existing = null,
+            dictionary = DictionaryState.Idle,
         )
         return if (words.size <= 1) {
             val word = words.firstOrNull()?.text ?: request.text
@@ -116,6 +148,7 @@ class CaptureViewModel(
         val sentence = state.sentences.getOrNull(sentenceIndex) ?: return
         val token = sentence.tokens.getOrNull(tokenIndex)?.takeIf { it.isWord } ?: return
         resetEdits()
+        following = sentence.text.substring(token.start)
         state = state.copy(
             choice = WordChoice(sentenceIndex, tokenIndex),
             wordForm = token.text,
@@ -125,33 +158,42 @@ class CaptureViewModel(
             sentence = sentence.text,
             wordStart = token.start,
             wordEnd = token.end,
+            existing = null,
+            dictionary = DictionaryState.Idle,
         )
-        refreshExisting(debounce = false)
+        lookUp()
     }
 
     fun choosePhrase() {
         val phrase = request.text.trim()
         resetEdits()
+        following = phrase
         state = state.copy(
             choice = WordChoice.PHRASE, wordForm = phrase, lemma = phrase, translation = "",
-            definition = "", sentence = "", wordStart = -1, wordEnd = -1,
+            definition = "", sentence = "", wordStart = -1, wordEnd = -1, existing = null,
+            dictionary = DictionaryState.Idle,
         )
-        refreshExisting(debounce = false)
+        lookUp()
     }
 
     fun setLanguage(language: String) {
         if (language == state.language) return
         resetEdits()
         state = analyze(state, language)
-        refreshExisting(debounce = false)
+        if (state.hasWord) {
+            following = state.wordForm
+            lookUp()
+        }
     }
 
     fun setTargetLanguage(language: String) {
         settings.setTargetLanguage(language)
         state = state.copy(targetLanguage = language)
+        if (state.hasWord) lookUp()
     }
 
     fun setLemma(value: String) {
+        lemmaEdited = true
         state = state.copy(lemma = value)
         refreshExisting(debounce = true)
     }
@@ -164,6 +206,15 @@ class CaptureViewModel(
     fun setDefinition(value: String) {
         definitionEdited = true
         state = state.copy(definition = value)
+    }
+
+    /** The user picked one of the dictionary's senses. */
+    fun useSense(entry: DictionaryEntry, sense: DictionarySense) {
+        translationEdited = true
+        definitionEdited = true
+        if (!lemmaEdited) state = state.copy(lemma = entry.lemma)
+        state = state.copy(translation = sense.text(), definition = sense.extraDefinition())
+        refreshExisting(debounce = false)
     }
 
     /** Only for a single selected word: the sentence the user adds by hand. */
@@ -207,20 +258,57 @@ class CaptureViewModel(
     }
 
     private fun resetEdits() {
+        lemmaEdited = false
         translationEdited = false
         definitionEdited = false
     }
 
-    /** Looks up whether the base form is already saved and fills in its translation. */
+    /**
+     * Looks the chosen word up and fills base form, translation and definition
+     * from the best match; then checks whether that base form is already saved.
+     */
+    private fun lookUp() {
+        lookupJob?.cancel()
+        val language = state.language
+        val target = state.targetLanguage
+        val word = state.wordForm
+        lookupJob = viewModelScope.launch {
+            val result = dictionary.lookup(language, target, word, following)
+            state = when {
+                result != null -> applyResult(result)
+                dictionary.canLookUp(language, target) -> state.copy(dictionary = DictionaryState.NotFound)
+                else -> state.copy(dictionary = DictionaryState.Unavailable)
+            }
+            refreshExisting(debounce = false)
+        }
+    }
+
+    private fun applyResult(result: LookupResult): CaptureUiState {
+        val entry = result.entries.first()
+        val sense = entry.senses.firstOrNull { it.translations.isNotEmpty() } ?: entry.senses.first()
+        var next = state.copy(dictionary = DictionaryState.Found(result))
+        // Languages without spaces: the match may be longer or shorter than the
+        // tapped piece (食べ|た → 食べた); the saved word and its position follow it
+        val matched = result.matched
+        if (matched != next.wordForm && next.wordStart >= 0 && next.sentence.startsWith(matched, next.wordStart)) {
+            next = next.copy(wordForm = matched, wordEnd = next.wordStart + matched.length)
+        }
+        if (!lemmaEdited) next = next.copy(lemma = entry.lemma)
+        if (!translationEdited) next = next.copy(translation = sense.text())
+        if (!definitionEdited) next = next.copy(definition = sense.extraDefinition())
+        return next
+    }
+
+    /** Looks up whether the base form is already saved; your earlier translation wins. */
     private fun refreshExisting(debounce: Boolean) {
-        lookup?.cancel()
-        lookup = viewModelScope.launch {
+        existingJob?.cancel()
+        existingJob = viewModelScope.launch {
             if (debounce) delay(LOOKUP_DELAY_MS)
             val existing = vocabulary.existing(state.language, state.lemma)
             state = state.copy(
                 existing = existing,
-                translation = if (existing != null && !translationEdited) existing.translation else state.translation,
-                definition = if (existing != null && !definitionEdited) existing.definition else state.definition,
+                translation = existing?.translation?.takeIf { it.isNotBlank() && !translationEdited } ?: state.translation,
+                definition = existing?.definition?.takeIf { it.isNotBlank() && !definitionEdited } ?: state.definition,
             )
         }
     }
@@ -230,3 +318,10 @@ class CaptureViewModel(
         const val LOOKUP_DELAY_MS = 300L
     }
 }
+
+/** A sense as it goes into the translation field. */
+internal fun DictionarySense.text(): String =
+    translations.joinToString("; ").ifEmpty { definition }
+
+/** The definition, unless it already went into the translation field. */
+internal fun DictionarySense.extraDefinition(): String = if (translations.isEmpty()) "" else definition

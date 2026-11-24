@@ -49,7 +49,12 @@ private const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(repository: SettingsRepository, onBack: () -> Unit) {
+fun SettingsScreen(
+    repository: SettingsRepository,
+    suggestedTargets: List<String>,
+    onOpenDictionaries: () -> Unit,
+    onBack: () -> Unit,
+) {
     val settings by repository.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     // A language change recreates the activity, so reading it once is enough
@@ -94,6 +99,11 @@ fun SettingsScreen(repository: SettingsRepository, onBack: () -> Unit) {
 
             SectionHeader(stringResource(R.string.settings_section_language))
             ClickRow(
+                title = stringResource(R.string.settings_dictionaries),
+                summary = stringResource(R.string.settings_dictionaries_summary),
+                onClick = onOpenDictionaries,
+            )
+            ClickRow(
                 title = stringResource(R.string.settings_target_language),
                 summary = Languages.displayName(settings.targetLanguage),
                 onClick = { showTargetDialog = true },
@@ -127,7 +137,7 @@ fun SettingsScreen(repository: SettingsRepository, onBack: () -> Unit) {
         LanguagePickerDialog(
             title = stringResource(R.string.settings_target_language),
             selected = settings.targetLanguage,
-            recent = emptyList(),
+            recent = suggestedTargets,
             onSelect = { tag ->
                 showTargetDialog = false
                 repository.setTargetLanguage(tag)

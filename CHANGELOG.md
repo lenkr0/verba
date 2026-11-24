@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.3.0] – 2026-11-23
+
+### Offline dictionaries
+
+- **Settings → Dictionaries:** pick the dictionaries for the languages you
+  read and download them once; after that they work without internet. So
+  far: English → German (240,000 words), Japanese → German, Japanese →
+  English (217,000 each) and Chinese → English (122,000), 9–22 MB each.
+- The sheet now fills in the base form, translation and definition from the
+  dictionary and lists the other meanings; tap one to use it. Fields you
+  typed into stay as you typed them, and a word you saved before keeps
+  your translation.
+- Verba finds what you mean, not only the exact word: "running" → run,
+  "gave up" → give up, 食べた → 食べる; in Chinese and Japanese it takes the
+  longest dictionary match from the character you tapped.
+- Where there's no dictionary into your language yet (e.g. Chinese →
+  German), Verba uses the English one and says so.
+- Chinese readings are shown with tone marks (xué xí).
+- Each dictionary lists its sources and licenses. A dictionary file you
+  downloaded yourself can be imported.
+
+### Good to know
+
+- Verba now has the internet permission – used only when you download a
+  dictionary, and only from this project's releases on GitHub.
+
 ## [0.2.0] – 2026-11-23
 
 ### Collect words from any app

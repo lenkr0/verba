@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Verba requests no permissions. CI fails if a library adds one
-         (tools/check-permissions.sh). -->
+    <!-- The only permission: downloading dictionaries when you tap
+         "Download" (from GitHub, see DictionaryDownloader). CI fails if a
+         library adds any other one (tools/check-permissions.sh). -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".VerbaApplication"

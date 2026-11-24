@@ -17,6 +17,23 @@ The icons in `app/src/main/res/drawable/ic_*.xml` (except
 - https://developer.android.com/jetpack
 - License: Apache License 2.0
 
+## Dictionary data
+
+The dictionaries are not part of the app; they are downloaded separately
+and keep their sources' licenses, which the app shows for each dictionary
+(Settings → Dictionaries → tap a dictionary):
+
+- **Wiktionary** (English and German editions), extracted by Tatu Ylonen's
+  [wiktextract](https://github.com/tatuylonen/wiktextract) and published on
+  [kaikki.org](https://kaikki.org) – CC BY-SA 4.0
+- **Ding** German–English dictionary by Frank Richter, TU Chemnitz –
+  GPL-2.0-or-later
+- **JMdict** by the Electronic Dictionary Research and Development Group –
+  CC BY-SA 4.0
+- **CC-CEDICT** by MDBG and contributors – CC BY-SA 4.0
+
+The builder (`tools/dictionary`) is part of Verba and under its license.
+
 ## Kotlin, kotlinx.coroutines, kotlinx.serialization
 
 - Copyright JetBrains s.r.o. and contributors

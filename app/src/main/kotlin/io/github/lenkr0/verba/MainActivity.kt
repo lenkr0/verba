@@ -17,16 +17,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.lenkr0.verba.ui.StartScreen
 import io.github.lenkr0.verba.ui.VerbaNavigation
 import io.github.lenkr0.verba.ui.components.VerbaAlertDialog
 import io.github.lenkr0.verba.ui.theme.VerbaTheme
 import io.github.lenkr0.verba.ui.theme.isDarkTheme
 
 class MainActivity : ComponentActivity() {
+    companion object {
+        /** Extra for intents that open a particular screen. */
+        const val EXTRA_OPEN = "io.github.lenkr0.verba.OPEN"
+        const val OPEN_DICTIONARIES = "dictionaries"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val container = appContainer
+        val start = if (intent?.getStringExtra(EXTRA_OPEN) == OPEN_DICTIONARIES) StartScreen.Dictionaries else StartScreen.Home
 
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle()
@@ -45,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
             VerbaTheme(darkTheme = dark, eInk = settings.eInkMode) {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    VerbaNavigation(container)
+                    VerbaNavigation(container, start)
                 }
                 if (settings.shouldSuggestEInk(container.isEInkDevice)) {
                     EInkSuggestionDialog(
