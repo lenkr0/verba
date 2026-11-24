@@ -73,6 +73,16 @@ creating a second one.
 | `created_at`, `updated_at` | integer | Epoch ms, UTC |
 | `deleted_at` | integer, nullable | Tombstone |
 
+## Deleting, undoing and merging
+
+- **Deleting** a word marks the entry and its sentences with the same
+  `deleted_at`. **Undo** clears exactly the marks with that time, so
+  sentences deleted earlier on their own stay deleted. If the same base form
+  was saved again in the meantime, the restored entry is merged into it.
+- **Merging** entry A into entry B moves A's sentences to B, adds A's
+  translations that B doesn't have (`;`-separated, each once), keeps B's
+  definition (or takes A's if B has none) and marks A deleted.
+
 ## Syncing duplicates
 
 Two devices can create an entry for the same base form independently, with

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.4.0] – 2026-11-24
+
+### Your word list
+
+- **Search** in base forms, translations, definitions, the words as they
+  appeared, sentences and book titles – also in Chinese and Japanese.
+- **Filters** by language (when you collect in more than one) and by book,
+  novel or manga, with the number of words each.
+- **A page per word:** change base form, translation and definition, see
+  every sentence with its book, app and date, delete single sentences.
+- **Delete** a word and get it back with "Undo" right afterwards.
+- **Merge duplicates:** Verba points out words that are probably the same
+  ("running" and "run", also via the dictionary) and merges them in one
+  tap – sentences and translations are kept. Any two words of a language
+  can be merged by hand, and changing a base form to one you already have
+  offers the same.
+
+### Good to know
+
+- Filtering by learning status comes with reviewing (0.5.0).
+
 ## [0.3.0] – 2026-11-23
 
 ### Offline dictionaries

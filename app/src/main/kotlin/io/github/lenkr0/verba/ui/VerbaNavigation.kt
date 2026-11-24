@@ -7,8 +7,8 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -21,7 +21,12 @@ import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
 import io.github.lenkr0.verba.AppContainer
 import io.github.lenkr0.verba.language.Languages
+import io.github.lenkr0.verba.ui.entry.EntryScreen
+import io.github.lenkr0.verba.ui.entry.EntryViewModel
+import io.github.lenkr0.verba.ui.home.HomeActions
 import io.github.lenkr0.verba.ui.home.HomeScreen
+import io.github.lenkr0.verba.ui.home.HomeState
+import io.github.lenkr0.verba.ui.home.HomeViewModel
 import io.github.lenkr0.verba.ui.settings.DictionariesScreen
 import io.github.lenkr0.verba.ui.settings.SettingsScreen
 import io.github.lenkr0.verba.ui.theme.LocalEInkMode
@@ -35,6 +40,9 @@ data object SettingsRoute : NavKey
 
 @Serializable
 data object DictionariesRoute : NavKey
+
+@Serializable
+data class EntryRoute(val id: String) : NavKey
 
 /** Where the app opens: the home screen, or straight to the dictionaries (from the capture sheet). */
 enum class StartScreen { Home, Dictionaries }
@@ -67,8 +75,38 @@ fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Ho
         predictivePopTransitionSpec = if (eInk) noPredictiveTransition else defaultPredictivePopTransitionSpec(),
         entryProvider = entryProvider {
             entry<HomeRoute> {
-                val entries by remember { container.vocabulary.entryList() }.collectAsStateWithLifecycle(initialValue = null)
-                HomeScreen(entries = entries, onOpenSettings = { backStack.add(SettingsRoute) })
+                val viewModel = viewModel { HomeViewModel(container.vocabulary, container.deletions) }
+                val entries by viewModel.entries.collectAsStateWithLifecycle()
+                val filter by viewModel.filter.collectAsStateWithLifecycle()
+                val languages by viewModel.languages.collectAsStateWithLifecycle()
+                val sources by viewModel.sources.collectAsStateWithLifecycle()
+                val pending by viewModel.pendingDeletion.collectAsStateWithLifecycle()
+                HomeScreen(
+                    HomeState(entries, filter, languages, sources, pending),
+                    HomeActions(
+                        onOpenSettings = { backStack.add(SettingsRoute) },
+                        onOpenEntry = { backStack.add(EntryRoute(it)) },
+                        onQuery = viewModel::setQuery,
+                        onToggleLanguage = viewModel::toggleLanguage,
+                        onToggleSource = viewModel::toggleSource,
+                        onUndo = viewModel::undo,
+                        onUndoDismissed = viewModel::dismissUndo,
+                    ),
+                )
+            }
+            entry<EntryRoute> { key ->
+                val viewModel = viewModel(key = key.id) {
+                    EntryViewModel(key.id, container.vocabulary, container.dictionaryLookup, container.settings, container.deletions)
+                }
+                EntryScreen(
+                    viewModel = viewModel,
+                    onBack = { if (backStack.lastOrNull() == key) backStack.removeLastOrNull() },
+                    // After a merge, the merged-into word replaces this one
+                    onOpenEntry = { id ->
+                        if (backStack.lastOrNull() == key) backStack.removeLastOrNull()
+                        backStack.add(EntryRoute(id))
+                    },
+                )
             }
             entry<SettingsRoute> {
                 val installed by container.dictionaryStore.installed.collectAsStateWithLifecycle()

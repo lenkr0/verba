@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -93,5 +94,85 @@ class VocabRepositoryTest {
         repository.save(capture("run", sentence = "Something else entirely.", word = "running"))
         val item = repository.entryList().first().single()
         assertEquals(-1, item.latestWordStart)
+    }
+
+    @Test
+    fun searchFindsBaseFormsTranslationsSentencesAndTitles() = runTest {
+        repository.save(capture("run", "She was running late.", "running", title = "The Hobbit", translation = "laufen"))
+        repository.save(capture("学习", language = "zh", title = "三体", translation = "lernen"))
+        suspend fun search(q: String) = repository.entryList(ListFilter(query = q)).first().map { it.entry.lemma }
+
+        assertEquals(listOf("run"), search("RUN"))
+        assertEquals(listOf("run"), search("lauf"))
+        assertEquals(listOf("run"), search("late"))
+        assertEquals(listOf("run"), search("hobbit"))
+        assertEquals(listOf("学习"), search("学"))
+        assertEquals(listOf("学习"), search("三体"))
+        assertEquals(emptyList<String>(), search("100%"))
+    }
+
+    @Test
+    fun filtersByLanguageAndSource() = runTest {
+        repository.save(capture("run", title = "The Hobbit"))
+        repository.save(capture("walk", title = "Dune"))
+        repository.save(capture("学习", language = "zh", title = "三体"))
+        val hobbit = repository.sourceCounts().first().first { it.title == "The Hobbit" }
+
+        assertEquals(setOf("run", "walk"), repository.entryList(ListFilter(language = "en")).first().map { it.entry.lemma }.toSet())
+        assertEquals(listOf("run"), repository.entryList(ListFilter(sourceId = hobbit.id)).first().map { it.entry.lemma })
+        assertEquals(mapOf("en" to 2, "zh" to 1), repository.languageCounts().first().associate { it.language to it.entryCount })
+    }
+
+    @Test
+    fun deleteCanBeUndoneOnlyForThatDeletion() = runTest {
+        val run = repository.save(capture("run", "She was running late.", "running")).entryId
+        repository.save(capture("run", "He ran home.", "ran"))
+        val contexts = repository.contexts(run).first()
+        repository.deleteContext(contexts.first().context.id) // an older, separate deletion
+
+        val token = repository.delete(run)
+        assertTrue(repository.entryList().first().isEmpty())
+        repository.restore(run, token)
+        assertEquals(1, repository.entryList().first().single().contextCount) // the single sentence stays deleted
+    }
+
+    @Test
+    fun restoringMergesIntoAWordSavedInTheMeantime() = runTest {
+        val first = repository.save(capture("run", "She was running late.", "running", translation = "laufen")).entryId
+        val token = repository.delete(first)
+        val second = repository.save(capture("run", "He ran home.", "ran", translation = "rennen")).entryId
+        repository.restore(first, token)
+
+        val item = repository.entryList().first().single()
+        assertEquals(second, item.entry.id)
+        assertEquals(2, item.contextCount)
+        assertEquals("rennen; laufen", item.entry.translation)
+    }
+
+    @Test
+    fun mergeMovesSentencesAndCombinesTranslations() = runTest {
+        val running = repository.save(capture("running", "She was running late.", "running", translation = "laufend")).entryId
+        val run = repository.save(capture("run", "He ran home.", "ran", translation = "laufen")).entryId
+        val entry = repository.entry(running).first()!!
+        assertEquals(listOf(run), repository.likelyDuplicates(entry).map { it.id })
+
+        repository.merge(running, run)
+        val item = repository.entryList().first().single()
+        assertEquals(run, item.entry.id)
+        assertEquals(2, item.contextCount)
+        assertEquals("laufen; laufend", item.entry.translation)
+        assertNotNull(repository.entry(running).first()!!.deletedAt)
+    }
+
+    @Test
+    fun editingToAnExistingBaseFormReportsTheDuplicate() = runTest {
+        val running = repository.save(capture("running")).entryId
+        val run = repository.save(capture("run")).entryId
+        val result = repository.update(running, "Run", "laufen", "")
+        assertEquals(run, (result as UpdateResult.Duplicate).other.id)
+        assertEquals("running", repository.entry(running).first()!!.lemma) // unchanged
+
+        assertEquals(UpdateResult.Saved, repository.update(running, "sprint", "sprinten", "to run fast"))
+        assertEquals("sprinten", repository.entry(running).first()!!.translation)
     }
 }

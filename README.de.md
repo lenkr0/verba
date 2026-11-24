@@ -33,7 +33,11 @@ Schon da:
   „gave up“ → „give up“), japanische Beugungen (食べた → 食べる) und den
   längsten Treffer in Sprachen ohne Leerzeichen; gibt es noch kein
   Wörterbuch in deine Sprache, zeigt es das englische und sagt das dazu.
-- **Vokabelliste** mit dem letzten Satz und der Quelle jedes Worts.
+- **Vokabelliste** mit Suche (Wörter, Übersetzungen, Sätze, Bücher),
+  Filtern nach Sprache und Buch und einer Seite pro Wort: bearbeiten, alle
+  Sätze sehen, ein Wort oder einen einzelnen Satz löschen (mit Rückgängig)
+  und Duplikate zusammenführen – Verba weist auf wahrscheinliche hin
+  („running“ und „run“).
 - **Helles und dunkles Design**, wie im System oder von Hand gewählt.
 - **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
   Tippflächen. Auf Boox-E-Readern schlägt Verba ihn beim ersten Start vor.
@@ -41,8 +45,6 @@ Schon da:
 
 Geplant, in dieser Reihenfolge:
 
-- [ ] **Vokabelliste** mit Suche, Filtern, Bearbeiten und Zusammenführen von
-  Duplikaten über die Grundform.
 - [ ] **Lernen** mit Karteikarten und FSRS-Wiederholungsplanung; die Karte
   zeigt deinen Satz mit einer Lücke.
 - [ ] **Manga und Bilder:** Texterkennung auf Screenshots (Teilen oder

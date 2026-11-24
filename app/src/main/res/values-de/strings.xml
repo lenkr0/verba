@@ -97,5 +97,29 @@
     <string name="capture_get_dictionaries">Wörterbücher laden</string>
     <string name="capture_not_found">Nicht im Wörterbuch. Tippe die Übersetzung selbst ein.</string>
 
+    <!-- Word list and word details -->
+    <string name="action_search">Suchen</string>
+    <string name="action_undo">Rückgängig</string>
+    <string name="home_search_hint">Wörter, Übersetzungen, Sätze suchen</string>
+    <string name="home_no_results">Keine passenden Wörter.</string>
+    <string name="home_deleted">„%1$s“ gelöscht</string>
+    <string name="entry_sentences">Sätze</string>
+    <string name="entry_save">Änderungen speichern</string>
+    <string name="entry_delete">Wort löschen</string>
+    <string name="entry_delete_title">„%1$s“ löschen?</string>
+    <string name="entry_delete_body">Das Wort und alle seine Sätze werden entfernt. Direkt danach kannst du das rückgängig machen.</string>
+    <string name="entry_delete_sentence">Satz löschen</string>
+    <string name="entry_delete_sentence_title">Diesen Satz löschen?</string>
+    <string name="entry_merge">Mit anderem Wort zusammenführen</string>
+    <string name="entry_merge_title">„%1$s“ zusammenführen mit …</string>
+    <string name="entry_merge_body">Seine Sätze und Übersetzungen kommen zu dem Wort, das du wählst; „%1$s“ wird danach entfernt.</string>
+    <string name="entry_merge_search">In deinen Wörtern suchen</string>
+    <string name="entry_merge_none">Keine anderen passenden Wörter in dieser Sprache.</string>
+    <string name="entry_duplicate_hint">Wahrscheinlich dasselbe Wort: „%1$s“</string>
+    <string name="entry_merge_into">Zusammenführen</string>
+    <string name="entry_conflict_title">„%1$s“ ist schon in deiner Liste</string>
+    <string name="entry_conflict_body">Dieses Wort damit zusammenführen? Alle Sätze und Übersetzungen bleiben erhalten.</string>
+    <string name="entry_merge_confirm">Zusammenführen</string>
+
     <string name="error_no_browser">Keine App gefunden, die diesen Link öffnen kann.</string>
 </resources>
