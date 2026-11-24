@@ -1,18 +1,20 @@
 package io.github.lenkr0.verba.dictionary
 
+import io.github.lenkr0.verba.util.ChecksumException
+import io.github.lenkr0.verba.util.CountingInputStream
+import io.github.lenkr0.verba.util.DOWNLOAD_BUFFER
+import io.github.lenkr0.verba.util.copyCancellable
+import io.github.lenkr0.verba.util.openUrl
+import io.github.lenkr0.verba.util.toHex
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.BufferedInputStream
 import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.util.zip.GZIPInputStream
-import kotlin.coroutines.coroutineContext
 
 @Serializable
 data class Catalog(
@@ -38,13 +40,7 @@ data class CatalogPack(
     val sources: List<PackSource> = emptyList(),
 )
 
-class ChecksumException : Exception("checksum mismatch")
-
-/**
- * The only network code in Verba: fetches the catalog and packs from the
- * project's GitHub release when the user asks for it. Sends nothing but
- * the request itself (with a "Verba/<version>" user agent).
- */
+/** Fetches the dictionary catalog and packs from the project's GitHub release when the user asks for it. */
 class DictionaryDownloader(
     private val store: DictionaryStore,
     private val userAgent: String,
@@ -67,11 +63,11 @@ class DictionaryDownloader(
                 val digest = MessageDigest.getInstance("SHA-256")
                 open(pack.url).use { raw ->
                     val counting = CountingInputStream(raw) { read -> onProgress(read, pack.size) }
-                    GZIPInputStream(DigestInputStream(counting, digest), BUFFER).use { gz ->
-                        temp.outputStream().use { out -> copy(gz, out) }
+                    GZIPInputStream(DigestInputStream(counting, digest), DOWNLOAD_BUFFER).use { gz ->
+                        temp.outputStream().use { out -> copyCancellable(gz, out) }
                     }
                 }
-                val actual = digest.digest().joinToString("") { "%02x".format(it) }
+                val actual = digest.digest().toHex()
                 if (!actual.equals(pack.sha256, ignoreCase = true)) throw ChecksumException()
                 store.install(temp)
             } finally {
@@ -83,12 +79,12 @@ class DictionaryDownloader(
     suspend fun import(input: InputStream): PackInfo = withContext(Dispatchers.IO) {
         val temp = store.tempFile()
         try {
-            BufferedInputStream(input, BUFFER).use { buffered ->
+            BufferedInputStream(input, DOWNLOAD_BUFFER).use { buffered ->
                 buffered.mark(2)
                 val gzip = buffered.read() == 0x1f && buffered.read() == 0x8b
                 buffered.reset()
-                val source = if (gzip) GZIPInputStream(buffered, BUFFER) else buffered
-                temp.outputStream().use { out -> copy(source, out) }
+                val source = if (gzip) GZIPInputStream(buffered, DOWNLOAD_BUFFER) else buffered
+                temp.outputStream().use { out -> copyCancellable(source, out) }
             }
             store.install(temp)
         } finally {
@@ -96,55 +92,9 @@ class DictionaryDownloader(
         }
     }
 
-    private suspend fun copy(input: InputStream, out: java.io.OutputStream) {
-        val buffer = ByteArray(BUFFER)
-        while (true) {
-            coroutineContext.ensureActive() // cancelling stops the download
-            val n = input.read(buffer)
-            if (n < 0) break
-            out.write(buffer, 0, n)
-        }
-    }
-
-    private fun open(url: String): InputStream {
-        val connection = URL(url).openConnection()
-        connection.connectTimeout = 15_000
-        connection.readTimeout = 30_000
-        connection.setRequestProperty("User-Agent", userAgent)
-        if (connection is HttpURLConnection) {
-            connection.instanceFollowRedirects = true
-            val code = connection.responseCode
-            if (code !in 200..299) {
-                connection.disconnect()
-                throw java.io.IOException("HTTP $code")
-            }
-        }
-        return connection.getInputStream()
-    }
-
-    private class CountingInputStream(
-        private val source: InputStream,
-        private val onRead: (Long) -> Unit,
-    ) : java.io.FilterInputStream(source) {
-        private var count = 0L
-        private var reported = 0L
-
-        override fun read(): Int = super.read().also { if (it >= 0) advance(1) }
-
-        override fun read(b: ByteArray, off: Int, len: Int): Int = super.read(b, off, len).also { if (it > 0) advance(it.toLong()) }
-
-        private fun advance(n: Long) {
-            count += n
-            if (count - reported >= REPORT_STEP) {
-                reported = count
-                onRead(count)
-            }
-        }
-    }
+    private fun open(url: String): InputStream = openUrl(url, userAgent)
 
     companion object {
         const val CATALOG_URL = "https://github.com/lenkr0/verba/releases/download/dictionaries/catalog.json"
-        private const val BUFFER = 1 shl 16
-        private const val REPORT_STEP = 256L * 1024
     }
 }

@@ -11,8 +11,12 @@ aapt2="$(ls -d "$sdk"/build-tools/*/aapt2* 2>/dev/null | sort -V | tail -1)"
 
 # One pattern per line; each needs a reason.
 allowed=(
-  # Downloading dictionary packs when the user taps "Download" (M2)
+  # Downloading dictionary packs and text recognition models when the user taps "Download"
   '^android\.permission\.INTERNET$'
+  # "Read screen" tile (M5): a foreground service only while one frame is captured,
+  # after Android's consent dialog
+  '^android\.permission\.FOREGROUND_SERVICE$'
+  '^android\.permission\.FOREGROUND_SERVICE_MEDIA_PROJECTION$'
   # androidx.core: protects receivers registered with RECEIVER_NOT_EXPORTED,
   # declared and used only by the app itself
   '^io\.github\.lenkr0\.verba(\.debug)?\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$'

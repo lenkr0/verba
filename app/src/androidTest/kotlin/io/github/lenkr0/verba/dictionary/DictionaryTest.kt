@@ -1,5 +1,6 @@
 package io.github.lenkr0.verba.dictionary
 
+import io.github.lenkr0.verba.util.ChecksumException
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest

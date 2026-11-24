@@ -191,4 +191,34 @@
     <string name="settings_reviews_per_day">Reviews per day</string>
     <string name="settings_reviews_per_day_hint">Due words beyond this wait for the next day.</string>
     <string name="action_ok">OK</string>
+    <!-- Text recognition -->
+    <string name="ocr_title">Text in image</string>
+    <string name="ocr_share_label">Find text with Verba</string>
+    <string name="ocr_open_image">Find text in an image</string>
+    <string name="ocr_hint">Tap a speech bubble or a line to look up its words.</string>
+    <string name="ocr_mode_image">Image</string>
+    <string name="ocr_mode_text">Text</string>
+    <string name="ocr_recognizing">Recognizing text…</string>
+    <string name="ocr_nothing_found">No text found in this image.</string>
+    <string name="ocr_image_failed">This image can’t be opened.</string>
+    <string name="ocr_failed">Text recognition didn’t work for this image.</string>
+    <string name="ocr_models_title">Text recognition</string>
+    <string name="ocr_models_body">To read text in images, Verba needs its recognition models once (%1$s). After that, recognition works offline, on your device.</string>
+    <string name="ocr_models_privacy">Downloaded from Verba’s release page on GitHub. Your images never leave your device.</string>
+    <string name="ocr_models_download">Download (%1$s)</string>
+    <string name="ocr_models_downloading">Downloading… %1$d %%</string>
+    <string name="ocr_models_error_download">The download failed. Check your connection and try again.</string>
+    <string name="ocr_models_error_checksum">The download was damaged. Please try again.</string>
+    <string name="settings_section_ocr">Text recognition</string>
+    <string name="settings_ocr_models">Recognition models</string>
+    <string name="settings_ocr_installed">Downloaded (%1$s) – Chinese, Japanese and Latin script</string>
+    <string name="settings_ocr_not_installed">Not downloaded yet (%1$s)</string>
+    <string name="settings_ocr_delete_title">Delete the recognition models?</string>
+    <string name="settings_ocr_delete_body">Text recognition will ask to download them again.</string>
+    <string name="settings_ocr_tile">Read the screen</string>
+    <string name="settings_ocr_tile_summary">Add the “Read screen” tile to Quick Settings: it captures the screen once – Android asks each time – and shows its text, e.g. in a manga.</string>
+    <string name="tile_read_screen">Read screen</string>
+    <string name="capture_channel">Screen capture</string>
+    <string name="capture_notification">Reading the screen…</string>
+    <string name="capture_failed">Couldn’t capture the screen.</string>
 </resources>

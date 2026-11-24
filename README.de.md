@@ -12,9 +12,10 @@ Sprachpaar gleich. Die Wörterbücher funktionieren offline, die App hat
 keine Werbung, kein Tracking und braucht keine Google-Play-Dienste.
 Ein E-Ink-Modus macht sie auf E-Readern wie dem Boox Go 7 angenehm.
 
-> **Stand: frühe Entwicklung.** Verba sammelt Wörter aus jeder App,
-> schlägt sie in Offline-Wörterbüchern nach, die du in der App lädst, und
-> lässt dich sie mit verteilter Wiederholung lernen. Die Funktionen unten
+> **Stand: frühe Entwicklung.** Verba sammelt Wörter aus jeder App – auch
+> aus Manga-Seiten und Screenshots –, schlägt sie in Offline-Wörterbüchern
+> nach, die du in der App lädst, und lässt dich sie mit verteilter
+> Wiederholung lernen. Die Funktionen unten
 > kommen Meilenstein für Meilenstein, siehe
 > [Roadmap](../../issues?q=label%3Amilestone). Screenshots folgen bald.
 
@@ -47,6 +48,13 @@ Schon da:
   wiederkommt. Wörter mit mehreren Sätzen zeigen sie abwechselnd.
   Tageslimits für neue Wörter und Wiederholungen, und die letzte Bewertung
   lässt sich zurücknehmen.
+- **Text in Bildern und auf dem Bildschirm:** Manga-Seite oder Screenshot
+  an Verba teilen, ein Bild auswählen oder die Schnelleinstellungs-Kachel
+  „Bildschirm lesen“ nutzen. Verba erkennt den Text – Chinesisch, Japanisch
+  (auch senkrechte Sprechblasen) und lateinische Schrift – und rahmt jede
+  Sprechblase ein; antippen und ihre Wörter mit der Sprechblase als Satz
+  speichern. Die Erkennung läuft auf deinem Gerät (PaddleOCRs
+  PP-OCRv5-Modelle auf ncnn, einmalig 11 MB Download).
 - **Helles und dunkles Design**, wie im System oder von Hand gewählt.
 - **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
   Tippflächen. Auf Boox-E-Readern schlägt Verba ihn beim ersten Start vor.
@@ -54,8 +62,6 @@ Schon da:
 
 Geplant, in dieser Reihenfolge:
 
-- [ ] **Manga und Bilder:** Texterkennung auf Screenshots (Teilen oder
-  Schnelleinstellungs-Kachel); ein erkanntes Wort antippen und nachschlagen.
 - [ ] **Satzübersetzung** (optional, offline wenn machbar).
 - [ ] **Export und Backup:** CSV, JSON, AnkiDroid.
 - [ ] **Startbildschirm-Widget** „Vokabel des Tages“.
@@ -71,17 +77,37 @@ Verba taucht an drei Stellen auf:
   jeder App.
 - **Lese-Apps mit externem Wörterbuch:** Kann dein Reader Wörter an
   ColorDict oder Aard 2 schicken, wähle eines davon als Wörterbuch – das
-  Wort öffnet sich dann in Verba.
+  Wort öffnet sich dann in Verba. In Readest das System-Wörterbuch
+  einschalten (Einstellungen → Sprache → Wörterbücher) und Verba als
+  Nachschlage-App wählen; markierst du einen ganzen Satz, bleibt er beim
+  Wort.
+- **Bilder:** ein Bild an „Text finden mit Verba“ teilen oder über der
+  Wortliste auf das Bild-Symbol tippen. Für Manga und alles andere auf dem
+  Bildschirm die Kachel „Bildschirm lesen“ hinzufügen (Einstellungen →
+  Texterkennung → Bildschirm lesen): Android fragt jedes Mal, Verba nimmt
+  ein Bild des Bildschirms auf und hört wieder auf.
 
 Deine eigene Sprache wählst du einmal unter Einstellungen → Übersetzen in,
 die nötigen Wörterbücher lädst du unter Einstellungen → Wörterbücher.
 
+Zum Wiederholen tippst du auf der Startseite auf **Starten**, sobald Wörter
+fällig sind. Neue Wörter kommen in der Reihenfolge, in der du sie gespeichert
+hast, 20 pro Tag, außer du änderst das unter Einstellungen → Wiederholen. Ein
+Lerntag beginnt um 4 Uhr, spätes Lesen in der Nacht zählt also noch zum
+Abend.
+
 ## Datenschutz
 
-- Verba fordert **eine Berechtigung an: Internetzugriff**, genutzt nur,
-  wenn du ein Wörterbuch lädst – aus den Releases dieses Projekts auf GitHub,
-  sonst nichts. Die CI schlägt fehl, wenn eine Bibliothek eine andere
-  Berechtigung hinzufügen will (`tools/check-permissions.sh`).
+- **Internetzugriff** wird nur genutzt, wenn du ein Wörterbuch oder die
+  Modelle der Texterkennung lädst – aus den Releases dieses Projekts auf
+  GitHub, sonst nichts.
+- **Vordergrunddienst für die Bildschirmaufnahme**, nur für die Kachel
+  „Bildschirm lesen“: Nachdem Android dich gefragt hat, läuft er, während
+  ein Bild des Bildschirms aufgenommen wird, und hört dann auf. Das Bild
+  bleibt im Arbeitsspeicher, wird nie gespeichert und verlässt dein Gerät
+  nie.
+- Die CI schlägt fehl, wenn eine Bibliothek eine andere Berechtigung
+  hinzufügen will (`tools/check-permissions.sh`).
 - Keine Telemetrie, keine Werbung, keine Google-Play-Dienste.
 - Deine Wörter sind vom Google-Cloud-Backup ausgenommen; der Umzug auf ein
   neues Handy per Kabel oder WLAN (Gerät-zu-Gerät-Übertragung) funktioniert

@@ -26,6 +26,32 @@ is a port of py-fsrs 6.3.3, including its default parameters.
 - Copyright (c) 2022 Open Spaced Repetition
 - License: MIT
 
+## ncnn (text recognition)
+
+The native library `libverbaocr` links ncnn's prebuilt Android release
+(downloaded and checksum-verified by the build, see `app/build.gradle.kts`).
+
+- Project: https://github.com/Tencent/ncnn
+- Copyright (C) 2017 Tencent. All rights reserved.
+- License: BSD 3-Clause
+
+## Text recognition models
+
+Like the dictionaries, the models are not part of the app: they are
+downloaded when you turn on text recognition. They are PaddleOCR's PP-OCRv5
+mobile models, in the ONNX conversion by RapidOCR, converted to ncnn by
+`tools/ocr/build_pack.py`.
+
+- PaddleOCR: https://github.com/PaddlePaddle/PaddleOCR – Apache License 2.0
+- RapidOCR: https://github.com/RapidAI/RapidOCR – Apache License 2.0
+
+## Test images
+
+`app/src/androidTest/assets/ocr/pc_ja_e01p02.jpg` is a page of
+*Pepper&Carrot*, episode 1, by David Revoy (https://www.peppercarrot.com),
+Japanese translation, licensed under CC BY 4.0. The other test pages are made
+by `tools/ocr/make_test_images.py`.
+
 ## Dictionary data
 
 The dictionaries are not part of the app; they are downloaded separately

@@ -1,5 +1,6 @@
 package io.github.lenkr0.verba.dictionary
 
+import io.github.lenkr0.verba.util.ChecksumException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

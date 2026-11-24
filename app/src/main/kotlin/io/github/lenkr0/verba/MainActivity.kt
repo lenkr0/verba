@@ -1,9 +1,7 @@
 package io.github.lenkr0.verba
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +20,7 @@ import io.github.lenkr0.verba.ui.VerbaNavigation
 import io.github.lenkr0.verba.ui.components.VerbaAlertDialog
 import io.github.lenkr0.verba.ui.theme.VerbaTheme
 import io.github.lenkr0.verba.ui.theme.isDarkTheme
+import io.github.lenkr0.verba.ui.theme.systemBarsFollow
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -40,16 +39,7 @@ class MainActivity : ComponentActivity() {
             val settings by container.settings.settings.collectAsStateWithLifecycle()
             val dark = isDarkTheme(settings.themeMode)
 
-            // The app's theme can differ from the system's, so the status and
-            // navigation bar icons follow the app, not the system
-            LaunchedEffect(dark) {
-                val style = if (dark) {
-                    SystemBarStyle.dark(Color.TRANSPARENT)
-                } else {
-                    SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-                }
-                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
-            }
+            LaunchedEffect(dark) { systemBarsFollow(dark) }
 
             VerbaTheme(darkTheme = dark, eInk = settings.eInkMode) {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {

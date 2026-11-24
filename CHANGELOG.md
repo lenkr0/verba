@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.6.0] – 2026-11-24
+
+### Text in images and on the screen
+
+- **Find text in images:** share a manga page or screenshot to "Find text
+  with Verba" (e.g. from Mihon or the gallery), or tap the image icon above
+  the word list. Verba frames every speech bubble and paragraph; tap one to
+  open the usual sheet – the bubble becomes the sentence, tap the word you
+  want. A "Text" view lists everything that was recognized.
+- **Read the screen:** a quick settings tile (add it under Settings → Text
+  recognition) takes one picture of the screen and shows its text. Android
+  asks for consent each time; the picture stays in memory and is never
+  saved.
+- **Scripts:** Chinese (simplified and traditional), Japanese – including
+  vertical columns, read right to left – and Latin script.
+- **On your device:** PaddleOCR's PP-OCRv5 mobile models on ncnn. The
+  models (11 MB) are downloaded once, when you first use text recognition or
+  under Settings → Text recognition, and checked before use.
+
+### Good to know
+
+- The app grows from 3 to 7 MB (the recognition library for ARM devices).
+- New permission for the tile only: a foreground service while one frame is
+  captured.
+- Tested on emulators with Pepper&Carrot pages and test pages; real manga
+  with hand-drawn lettering and furigana can be harder.
+
 ## [0.5.0] – 2026-11-24
 
 ### Review
