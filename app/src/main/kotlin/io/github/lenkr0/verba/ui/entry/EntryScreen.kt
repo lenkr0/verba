@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,11 +41,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.lenkr0.verba.R
 import io.github.lenkr0.verba.data.ContextWithSource
 import io.github.lenkr0.verba.data.EntryEntity
+import io.github.lenkr0.verba.data.LearningStatus
+import io.github.lenkr0.verba.data.ReviewCardEntity
 import io.github.lenkr0.verba.language.Languages
 import io.github.lenkr0.verba.ui.components.SectionHeader
 import io.github.lenkr0.verba.ui.components.VerbaAlertDialog
 import io.github.lenkr0.verba.ui.components.VerbaCard
 import io.github.lenkr0.verba.ui.home.highlighted
+import io.github.lenkr0.verba.ui.home.label
+import io.github.lenkr0.verba.ui.review.relativeTime
 import io.github.lenkr0.verba.ui.theme.reading
 import java.text.DateFormat
 import java.util.Date
@@ -58,6 +63,8 @@ object EntryTags {
     const val DELETE = "entry_delete"
     const val MERGE = "entry_merge"
     const val MERGE_SEARCH = "entry_merge_search"
+    const val LEARNING = "entry_learning"
+    const val RESET = "entry_reset"
     fun sentence(id: String) = "entry_sentence_$id"
 }
 
@@ -70,6 +77,8 @@ fun EntryScreen(
 ) {
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val contexts by viewModel.contexts.collectAsStateWithLifecycle()
+    val card by viewModel.card.collectAsStateWithLifecycle()
+    var confirmReset by rememberSaveable { mutableStateOf(false) }
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
     var showMerge by rememberSaveable { mutableStateOf(false) }
     var deleteSentence by rememberSaveable { mutableStateOf<String?>(null) }
@@ -122,6 +131,7 @@ fun EntryScreen(
                     }
                 }
             }
+            item { Learning(card, onReset = { confirmReset = true }) }
             item { SectionHeader("${stringResource(R.string.entry_sentences)} · ${contexts.size}") }
             items(contexts, key = { it.context.id }) { context ->
                 SentenceRow(context, onDelete = { deleteSentence = context.context.id })
@@ -140,6 +150,19 @@ fun EntryScreen(
                 }
             },
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.action_cancel)) } },
+        )
+    }
+    if (confirmReset && current != null) {
+        VerbaAlertDialog(
+            onDismissRequest = { confirmReset = false },
+            title = { Text(stringResource(R.string.entry_reset_title, current.lemma)) },
+            text = { Text(stringResource(R.string.entry_reset_body)) },
+            confirmButton = {
+                TextButton(onClick = { confirmReset = false; viewModel.resetProgress() }) {
+                    Text(stringResource(R.string.entry_reset_confirm))
+                }
+            },
+            dismissButton = { TextButton(onClick = { confirmReset = false }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
     deleteSentence?.let { id ->
@@ -208,6 +231,40 @@ private fun Fields(entry: EntryEntity, viewModel: EntryViewModel) {
             enabled = viewModel.hasChanges(entry) && viewModel.lemma.isNotBlank(),
             modifier = Modifier.align(Alignment.End).testTag(EntryTags.SAVE),
         ) { Text(stringResource(R.string.entry_save)) }
+    }
+}
+
+/** Learning status and next review; [card] is null while the word is new. */
+@Composable
+private fun Learning(card: ReviewCardEntity?, onReset: () -> Unit) {
+    SectionHeader(stringResource(R.string.entry_learning))
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .testTag(EntryTags.LEARNING)
+            .padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            if (card == null) {
+                Text(stringResource(R.string.entry_status_new), style = MaterialTheme.typography.bodyMedium)
+                return@Column
+            }
+            Text(stringResource(LearningStatus.of(card).label), style = MaterialTheme.typography.titleSmall)
+            val now = System.currentTimeMillis()
+            val next = if (card.due <= now) stringResource(R.string.entry_status_due) else
+                stringResource(R.string.entry_status_next, relativeTime(card.due, now))
+            Text(
+                "$next · ${pluralStringResource(R.plurals.entry_status_reviews, card.reps, card.reps)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        if (card != null) {
+            TextButton(onClick = onReset, modifier = Modifier.testTag(EntryTags.RESET)) {
+                Text(stringResource(R.string.entry_reset))
+            }
+        }
     }
 }
 

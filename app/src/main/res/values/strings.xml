@@ -124,4 +124,71 @@
     <string name="entry_merge_confirm">Merge</string>
 
     <string name="error_no_browser">No app found to open this link.</string>
+    <!-- Review -->
+    <string name="review_title">Review</string>
+    <string name="review_start">Start</string>
+    <plurals name="home_review_due">
+        <item quantity="one">%d word to review</item>
+        <item quantity="other">%d words to review</item>
+    </plurals>
+    <string name="review_nothing_due">Nothing to review right now</string>
+    <string name="review_next">Next: %1$s</string>
+    <string name="status_new">New</string>
+    <string name="status_learning">Learning</string>
+    <string name="status_known">Known</string>
+    <plurals name="review_left">
+        <item quantity="one">%d left</item>
+        <item quantity="other">%d left</item>
+    </plurals>
+    <string name="review_show_answer">Show answer</string>
+    <string name="review_show_hint">Show hint</string>
+    <string name="review_prompt_meaning">Which word means:</string>
+    <string name="review_prompt_word">What does this word mean?</string>
+    <string name="review_no_translation">No translation saved yet.</string>
+    <string name="rating_again">Again</string>
+    <string name="rating_hard">Hard</string>
+    <string name="rating_good">Good</string>
+    <string name="rating_easy">Easy</string>
+    <string name="rating_with_interval">%1$s, again in %2$s</string>
+    <string name="interval_minutes">%d min</string>
+    <string name="interval_hours">%d h</string>
+    <string name="interval_days">%d d</string>
+    <string name="interval_months">%s mo</string>
+    <string name="interval_years">%s y</string>
+    <string name="review_done_title">Done for now</string>
+    <plurals name="review_done_count">
+        <item quantity="one">You reviewed %d word.</item>
+        <item quantity="other">You reviewed %d words.</item>
+    </plurals>
+    <plurals name="review_new_waiting">
+        <item quantity="one">%d new word is waiting for the next days. You can change the daily limit in the settings.</item>
+        <item quantity="other">%d new words are waiting for the next days. You can change the daily limit in the settings.</item>
+    </plurals>
+    <string name="review_empty_title">No words yet</string>
+    <string name="review_empty_body">Save words while reading; they show up here to review.</string>
+    <string name="review_continue">Continue</string>
+    <string name="review_edit">Edit word</string>
+    <string name="review_undo">Undo last rating</string>
+
+    <!-- Learning progress on the word page -->
+    <string name="entry_learning">Progress</string>
+    <string name="entry_status_new">Not reviewed yet</string>
+    <string name="entry_status_next">Next review %1$s</string>
+    <plurals name="entry_status_reviews">
+        <item quantity="one">Reviewed once</item>
+        <item quantity="other">Reviewed %d times</item>
+    </plurals>
+    <string name="entry_status_due">Due for review</string>
+    <string name="entry_reset">Reset progress</string>
+    <string name="entry_reset_title">Reset progress for “%1$s”?</string>
+    <string name="entry_reset_body">The word counts as new again. Its review history is kept.</string>
+    <string name="entry_reset_confirm">Reset</string>
+
+    <!-- Settings: review -->
+    <string name="settings_section_review">Review</string>
+    <string name="settings_new_per_day">New words per day</string>
+    <string name="settings_new_per_day_hint">Words you review for the first time each day.</string>
+    <string name="settings_reviews_per_day">Reviews per day</string>
+    <string name="settings_reviews_per_day_hint">Due words beyond this wait for the next day.</string>
+    <string name="action_ok">OK</string>
 </resources>

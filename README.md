@@ -12,9 +12,10 @@ dictionaries work offline, it has no ads and no tracking, and it doesn't
 need Google Play services. An E-ink mode makes it comfortable on
 e-readers such as the Boox Go 7.
 
-> **Status: early development.** Verba collects words from any app and looks
-> them up in offline dictionaries you download in the app. The features below arrive
-> milestone by milestone, see the [roadmap](../../issues?q=label%3Amilestone).
+> **Status: early development.** Verba collects words from any app, looks
+> them up in offline dictionaries you download in the app and lets you review
+> them with spaced repetition. The features below arrive milestone by
+> milestone, see the [roadmap](../../issues?q=label%3Amilestone).
 > Screenshots follow soon.
 
 ## Features
@@ -34,9 +35,16 @@ Already there:
   longest match in languages without spaces; where there's no dictionary
   into your language yet, it shows the English one and says so.
 - **Word list** with search (words, translations, sentences, books),
-  filters by language and book, and a page per word: edit it, see all its
-  sentences, delete a word or a single sentence (with undo), and merge
-  duplicates – Verba points out likely ones ("running" and "run").
+  filters by language, book and learning status (new, learning, known),
+  and a page per word: edit it, see all its sentences and its progress,
+  delete a word or a single sentence (with undo), and merge duplicates –
+  Verba points out likely ones ("running" and "run").
+- **Review with spaced repetition** (FSRS-6, the scheduler Anki uses): the
+  card shows one of your sentences with a gap where the word was – tap
+  "Show hint" for the translation. Rate Again, Hard, Good or Easy; each
+  button says when the word comes back. Words with several sentences show
+  them in turn. Daily limits for new words and reviews, and the last
+  rating can be undone.
 - **Light and dark theme**, following the system or set by hand.
 - **E-ink mode:** pure black and white, no animations, larger touch targets.
   On Boox e-readers Verba suggests it on first start.
@@ -44,8 +52,6 @@ Already there:
 
 Planned, in this order:
 
-- [ ] **Review** with flashcards and FSRS spaced repetition; the card shows
-  your sentence with a gap.
 - [ ] **Manga and images:** text recognition on screenshots (share or
   quick-settings tile); tap a recognized word to look it up.
 - [ ] **Sentence translation** (optional, offline if feasible).
@@ -67,6 +73,11 @@ Verba shows up in three places:
 
 Pick your own language once under Settings → Translate into, and download
 the dictionaries you need under Settings → Dictionaries.
+
+To review, tap **Start** on the home screen when words are due. New words
+come in the order you saved them, 20 a day unless you change it under
+Settings → Review. A learning day starts at 4 a.m., so reading late at night
+still counts for the evening.
 
 ## Privacy
 

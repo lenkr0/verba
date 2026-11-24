@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -66,17 +67,22 @@ import io.github.lenkr0.verba.R
 import io.github.lenkr0.verba.data.EntryEntity
 import io.github.lenkr0.verba.data.EntryListItem
 import io.github.lenkr0.verba.data.LanguageCount
+import io.github.lenkr0.verba.data.LearningStatus
 import io.github.lenkr0.verba.data.ListFilter
 import io.github.lenkr0.verba.data.PendingDeletion
 import io.github.lenkr0.verba.data.SourceCount
 import io.github.lenkr0.verba.language.Languages
+import io.github.lenkr0.verba.review.ReviewCounts
 import io.github.lenkr0.verba.ui.components.VerbaCard
+import io.github.lenkr0.verba.ui.review.relativeTime
 import io.github.lenkr0.verba.ui.theme.VerbaTheme
 import io.github.lenkr0.verba.ui.theme.reading
 
 /** Test tags of the word list. */
 object HomeTags {
     const val SEARCH_FIELD = "home_search_field"
+    const val START_REVIEW = "home_start_review"
+    fun status(status: LearningStatus) = "home_status_${status.name.lowercase()}"
     fun entry(id: String) = "home_entry_$id"
 }
 
@@ -87,6 +93,8 @@ data class HomeState(
     val languages: List<LanguageCount> = emptyList(),
     val sources: List<SourceCount> = emptyList(),
     val pendingDeletion: PendingDeletion? = null,
+    /** Null while loading. */
+    val review: ReviewCounts? = null,
 )
 
 class HomeActions(
@@ -95,6 +103,8 @@ class HomeActions(
     val onQuery: (String) -> Unit = {},
     val onToggleLanguage: (String) -> Unit = {},
     val onToggleSource: (String) -> Unit = {},
+    val onToggleStatus: (LearningStatus) -> Unit = {},
+    val onStartReview: () -> Unit = {},
     val onUndo: (PendingDeletion) -> Unit = {},
     val onUndoDismissed: () -> Unit = {},
 )
@@ -146,6 +156,7 @@ fun HomeScreen(state: HomeState, actions: HomeActions) {
             state.entries == null -> Box(Modifier.padding(padding))
             state.entries.isEmpty() && !filtering -> EmptyState(Modifier.padding(padding))
             else -> Column(Modifier.padding(padding)) {
+                if (!filtering) state.review?.let { ReviewBanner(it, actions.onStartReview) }
                 Filters(state, actions)
                 if (state.entries.isEmpty()) {
                     Text(
@@ -193,16 +204,57 @@ private fun SearchBar(query: String, onQuery: (String) -> Unit, onClose: () -> U
     )
 }
 
-/** Chips for languages (when there is more than one) and books. Tapping a selected chip clears it. */
+/** What is due today, with the way into the review. */
+@Composable
+private fun ReviewBanner(counts: ReviewCounts, onStart: () -> Unit) {
+    VerbaCard(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 12.dp)) {
+        Row(
+            Modifier.padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(stringResource(R.string.review_title), style = MaterialTheme.typography.titleMedium)
+                val now = System.currentTimeMillis()
+                val summary = when {
+                    counts.total > 0 -> pluralStringResource(R.plurals.home_review_due, counts.total, counts.total)
+                    else -> listOfNotNull(
+                        stringResource(R.string.review_nothing_due),
+                        counts.nextDue?.takeIf { it > now }?.let { stringResource(R.string.review_next, relativeTime(it, now)) },
+                    ).joinToString(" · ")
+                }
+                Text(summary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            if (counts.total > 0) {
+                Button(onClick = onStart, modifier = Modifier.testTag(HomeTags.START_REVIEW)) {
+                    Text(stringResource(R.string.review_start))
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Chips for learning status (once something was reviewed), languages (when
+ * there is more than one) and books. Tapping a selected chip clears it.
+ */
 @Composable
 private fun Filters(state: HomeState, actions: HomeActions) {
     val languages = state.languages.takeIf { it.size > 1 }.orEmpty()
-    if (languages.isEmpty() && state.sources.isEmpty()) return
+    val statuses = if (state.review?.nextDue != null || state.filter.status != null) LearningStatus.entries else emptyList()
+    if (statuses.isEmpty() && languages.isEmpty() && state.sources.isEmpty()) return
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.padding(bottom = 4.dp),
     ) {
+        items(statuses, key = { "status-" + it.name }) { status ->
+            FilterChip(
+                selected = state.filter.status == status,
+                onClick = { actions.onToggleStatus(status) },
+                label = { Text(stringResource(status.label)) },
+                modifier = Modifier.testTag(HomeTags.status(status)),
+            )
+        }
         items(languages, key = { "lang-" + it.language }) { language ->
             FilterChip(
                 selected = state.filter.language == language.language,
@@ -220,6 +272,13 @@ private fun Filters(state: HomeState, actions: HomeActions) {
         }
     }
 }
+
+internal val LearningStatus.label: Int
+    get() = when (this) {
+        LearningStatus.New -> R.string.status_new
+        LearningStatus.Learning -> R.string.status_learning
+        LearningStatus.Known -> R.string.status_known
+    }
 
 @Composable
 private fun EntryList(entries: List<EntryListItem>, onOpen: (String) -> Unit) {
@@ -368,6 +427,7 @@ private fun HomeListPreview() = VerbaTheme(darkTheme = false) {
             entries = previewEntries,
             languages = listOf(LanguageCount("en", 12), LanguageCount("zh", 3)),
             sources = listOf(SourceCount("s1", "The Hobbit", 9), SourceCount("s2", "三体", 3)),
+            review = ReviewCounts(learning = 1, review = 7, new = 5, newWaiting = 0, nextDue = 0L),
         ),
         HomeActions(),
     )

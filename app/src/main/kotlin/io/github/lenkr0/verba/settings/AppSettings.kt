@@ -21,6 +21,16 @@ data class AppSettings(
     val targetLanguage: String = "en",
     /** Languages of recent lookups, most recent first. */
     val recentLanguages: List<String> = emptyList(),
+    /** Words reviewed for the first time per day. */
+    val newPerDay: Int = DEFAULT_NEW_PER_DAY,
+    /** Reviews of learned words per day; the rest wait for the next day. */
+    val reviewsPerDay: Int = DEFAULT_REVIEWS_PER_DAY,
 ) {
     fun shouldSuggestEInk(isEInkDevice: Boolean): Boolean = isEInkDevice && !eInkMode && !eInkPromptAnswered
+
+    companion object {
+        const val DEFAULT_NEW_PER_DAY = 20
+        const val DEFAULT_REVIEWS_PER_DAY = 200
+        const val MAX_PER_DAY = 9999
+    }
 }
