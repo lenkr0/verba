@@ -2,6 +2,7 @@ package io.github.lenkr0.verba
 
 import android.app.Application
 import android.content.Context
+import io.github.lenkr0.verba.data.Deletions
 import io.github.lenkr0.verba.data.VerbaDatabase
 import io.github.lenkr0.verba.dictionary.Dictionaries
 import io.github.lenkr0.verba.dictionary.DictionaryDownloader
@@ -35,6 +36,7 @@ class AppContainer(context: Context) {
     )
     val database: VerbaDatabase by lazy { VerbaDatabase.create(context) }
     val vocabulary: VocabRepository by lazy { VocabRepository(database) }
+    val deletions = Deletions()
 
     /** Lives as long as the app process; for work that outlives a screen, like downloads. */
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)

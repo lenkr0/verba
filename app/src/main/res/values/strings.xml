@@ -99,5 +99,29 @@
     <string name="capture_get_dictionaries">Get dictionaries</string>
     <string name="capture_not_found">Not in the dictionary. Type the translation yourself.</string>
 
+    <!-- Word list and word details -->
+    <string name="action_search">Search</string>
+    <string name="action_undo">Undo</string>
+    <string name="home_search_hint">Search words, translations, sentences</string>
+    <string name="home_no_results">No words match.</string>
+    <string name="home_deleted">“%1$s” deleted</string>
+    <string name="entry_sentences">Sentences</string>
+    <string name="entry_save">Save changes</string>
+    <string name="entry_delete">Delete word</string>
+    <string name="entry_delete_title">Delete “%1$s”?</string>
+    <string name="entry_delete_body">The word and all its sentences are removed. You can undo this right afterwards.</string>
+    <string name="entry_delete_sentence">Delete sentence</string>
+    <string name="entry_delete_sentence_title">Delete this sentence?</string>
+    <string name="entry_merge">Merge with another word</string>
+    <string name="entry_merge_title">Merge “%1$s” into …</string>
+    <string name="entry_merge_body">Its sentences and translations move to the word you pick; “%1$s” is then removed.</string>
+    <string name="entry_merge_search">Search your words</string>
+    <string name="entry_merge_none">No other words in this language match.</string>
+    <string name="entry_duplicate_hint">Probably the same word: “%1$s”</string>
+    <string name="entry_merge_into">Merge</string>
+    <string name="entry_conflict_title">“%1$s” is already in your list</string>
+    <string name="entry_conflict_body">Merge this word into it? All sentences and translations are kept.</string>
+    <string name="entry_merge_confirm">Merge</string>
+
     <string name="error_no_browser">No app found to open this link.</string>
 </resources>
