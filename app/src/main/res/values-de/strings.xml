@@ -189,4 +189,34 @@
     <string name="settings_reviews_per_day">Wiederholungen pro Tag</string>
     <string name="settings_reviews_per_day_hint">Fällige Wörter darüber hinaus warten auf den nächsten Tag.</string>
     <string name="action_ok">OK</string>
+    <!-- Texterkennung -->
+    <string name="ocr_title">Text im Bild</string>
+    <string name="ocr_share_label">Text finden mit Verba</string>
+    <string name="ocr_open_image">Text in einem Bild finden</string>
+    <string name="ocr_hint">Tippe auf eine Sprechblase oder Zeile, um ihre Wörter nachzuschlagen.</string>
+    <string name="ocr_mode_image">Bild</string>
+    <string name="ocr_mode_text">Text</string>
+    <string name="ocr_recognizing">Text wird erkannt …</string>
+    <string name="ocr_nothing_found">In diesem Bild wurde kein Text gefunden.</string>
+    <string name="ocr_image_failed">Dieses Bild lässt sich nicht öffnen.</string>
+    <string name="ocr_failed">Die Texterkennung hat bei diesem Bild nicht geklappt.</string>
+    <string name="ocr_models_title">Texterkennung</string>
+    <string name="ocr_models_body">Um Text in Bildern zu lesen, braucht Verba einmalig seine Erkennungsmodelle (%1$s). Danach läuft die Erkennung offline auf deinem Gerät.</string>
+    <string name="ocr_models_privacy">Geladen von Verbas Release-Seite auf GitHub. Deine Bilder verlassen dein Gerät nie.</string>
+    <string name="ocr_models_download">Herunterladen (%1$s)</string>
+    <string name="ocr_models_downloading">Wird geladen … %1$d %%</string>
+    <string name="ocr_models_error_download">Der Download ist fehlgeschlagen. Prüfe die Verbindung und versuche es noch einmal.</string>
+    <string name="ocr_models_error_checksum">Der Download war beschädigt. Bitte versuche es noch einmal.</string>
+    <string name="settings_section_ocr">Texterkennung</string>
+    <string name="settings_ocr_models">Erkennungsmodelle</string>
+    <string name="settings_ocr_installed">Geladen (%1$s) – Chinesisch, Japanisch und lateinische Schrift</string>
+    <string name="settings_ocr_not_installed">Noch nicht geladen (%1$s)</string>
+    <string name="settings_ocr_delete_title">Erkennungsmodelle löschen?</string>
+    <string name="settings_ocr_delete_body">Die Texterkennung bietet dann wieder an, sie herunterzuladen.</string>
+    <string name="settings_ocr_tile">Bildschirm lesen</string>
+    <string name="settings_ocr_tile_summary">Füge die Kachel „Bildschirm lesen“ zu den Schnelleinstellungen hinzu: Sie nimmt den Bildschirm einmal auf – Android fragt jedes Mal – und zeigt seinen Text, z. B. in einem Manga.</string>
+    <string name="tile_read_screen">Bildschirm lesen</string>
+    <string name="capture_channel">Bildschirmaufnahme</string>
+    <string name="capture_notification">Bildschirm wird gelesen …</string>
+    <string name="capture_failed">Der Bildschirm konnte nicht aufgenommen werden.</string>
 </resources>

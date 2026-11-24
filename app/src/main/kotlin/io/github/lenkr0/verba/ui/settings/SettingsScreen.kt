@@ -1,6 +1,10 @@
 package io.github.lenkr0.verba.ui.settings
 
+import android.app.StatusBarManager
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
+import android.graphics.drawable.Icon as SystemIcon
+import android.text.format.Formatter
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
@@ -37,6 +41,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.lenkr0.verba.BuildConfig
 import io.github.lenkr0.verba.R
+import io.github.lenkr0.verba.ocr.OcrModels
+import io.github.lenkr0.verba.ocr.ReadScreenTileService
 import io.github.lenkr0.verba.settings.AppLanguage
 import io.github.lenkr0.verba.settings.AppSettings
 import io.github.lenkr0.verba.settings.SettingsRepository
@@ -57,6 +63,7 @@ private const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
 @Composable
 fun SettingsScreen(
     repository: SettingsRepository,
+    ocrModels: OcrModels,
     suggestedTargets: List<String>,
     onOpenDictionaries: () -> Unit,
     onBack: () -> Unit,
@@ -68,6 +75,10 @@ fun SettingsScreen(
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
     var showTargetDialog by rememberSaveable { mutableStateOf(false) }
     var editLimit by rememberSaveable { mutableStateOf<Limit?>(null) }
+    var confirmDeleteModels by rememberSaveable { mutableStateOf(false) }
+    val modelsInstalled by ocrModels.installed.collectAsStateWithLifecycle()
+    val modelProgress by ocrModels.progress.collectAsStateWithLifecycle()
+    val modelSize = remember { Formatter.formatShortFileSize(context, OcrModels.PACK.size) }
 
     Scaffold(
         topBar = {
@@ -122,6 +133,28 @@ fun SettingsScreen(
                 onClick = { showLanguageDialog = true },
             )
 
+            SectionHeader(stringResource(R.string.settings_section_ocr))
+            ClickRow(
+                title = stringResource(R.string.settings_ocr_models),
+                summary = when {
+                    modelProgress != null -> stringResource(R.string.ocr_models_downloading, ((modelProgress ?: 0f) * 100).toInt())
+                    modelsInstalled -> stringResource(R.string.settings_ocr_installed, modelSize)
+                    else -> stringResource(R.string.settings_ocr_not_installed, modelSize)
+                },
+                onClick = {
+                    when {
+                        modelProgress != null -> Unit
+                        modelsInstalled -> confirmDeleteModels = true
+                        else -> ocrModels.download()
+                    }
+                },
+            )
+            ClickRow(
+                title = stringResource(R.string.settings_ocr_tile),
+                summary = stringResource(R.string.settings_ocr_tile_summary),
+                onClick = { addReadScreenTile(context) },
+            )
+
             SectionHeader(stringResource(R.string.settings_section_review))
             ClickRow(
                 title = stringResource(R.string.settings_new_per_day),
@@ -162,6 +195,20 @@ fun SettingsScreen(
                 repository.setTargetLanguage(tag)
             },
             onDismiss = { showTargetDialog = false },
+        )
+    }
+
+    if (confirmDeleteModels) {
+        VerbaAlertDialog(
+            onDismissRequest = { confirmDeleteModels = false },
+            title = { Text(stringResource(R.string.settings_ocr_delete_title)) },
+            text = { Text(stringResource(R.string.settings_ocr_delete_body)) },
+            confirmButton = {
+                TextButton(onClick = { confirmDeleteModels = false; ocrModels.delete() }) {
+                    Text(stringResource(R.string.dictionaries_delete))
+                }
+            },
+            dismissButton = { TextButton(onClick = { confirmDeleteModels = false }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
 
@@ -246,6 +293,16 @@ private fun LanguageDialog(current: String?, onSelect: (String?) -> Unit, onDism
         confirmButton = {},
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
+}
+
+/** Asks Android to add the "Read screen" tile to Quick Settings (Android shows its own dialog). */
+private fun addReadScreenTile(context: Context) {
+    context.getSystemService(StatusBarManager::class.java).requestAddTileService(
+        ComponentName(context, ReadScreenTileService::class.java),
+        context.getString(R.string.tile_read_screen),
+        SystemIcon.createWithResource(context, R.drawable.ic_document_scanner),
+        context.mainExecutor,
+    ) {}
 }
 
 private fun openUrl(context: Context, url: String) {

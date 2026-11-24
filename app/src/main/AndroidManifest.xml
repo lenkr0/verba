@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- The only permission: downloading dictionaries when you tap
-         "Download" (from GitHub, see DictionaryDownloader). CI fails if a
-         library adds any other one (tools/check-permissions.sh). -->
+    <!-- Internet only for downloads you start: dictionaries and text
+         recognition models from GitHub (see util/Http.kt). CI fails if a
+         library adds any other permission (tools/check-permissions.sh). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- "Read screen" tile: a foreground service runs only while one frame of
+         the screen is captured, after Android asked for consent -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
     <application
         android:name=".VerbaApplication"
@@ -55,6 +59,41 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <!-- Text recognition: "Find text with Verba" when sharing an image (a
+             screenshot, a manga page), and the screen capture of the tile. -->
+        <activity
+            android:name=".ocr.OcrActivity"
+            android:exported="true"
+            android:label="@string/ocr_title"
+            android:taskAffinity="">
+            <intent-filter android:label="@string/ocr_share_label">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ocr.ScreenCaptureActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Verba.Capture" />
+
+        <service
+            android:name=".ocr.ScreenCaptureService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <service
+            android:name=".ocr.ReadScreenTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_document_scanner"
+            android:label="@string/tile_read_screen"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

@@ -50,9 +50,7 @@ class OcrEngine(private val models: OcrModels) {
                 val crop = LineCrop.of(quad)
                 val steps = OcrNative.recognize(h, bitmap, crop.matrix, crop.width) ?: continue
                 val result = decoder!!.decode(steps)
-                if (result.text.isNotBlank() && result.confidence >= MIN_CONFIDENCE) {
-                    lines += TextLine(result.text, quad, result.confidence)
-                }
+                if (worthKeeping(result)) lines += TextLine(result.text, quad, result.confidence)
             }
             Layout.blocks(lines)
         }
@@ -78,6 +76,21 @@ class OcrEngine(private val models: OcrModels) {
 
     companion object {
         private const val MIN_CONFIDENCE = 0.5f
+        private const val SINGLE_LETTER_CONFIDENCE = 0.9f
+
+        /**
+         * Text without any letter (numbers, punctuation, an icon read as "0")
+         * has nothing to look up; a lone letter is often a misread drawing.
+         */
+        internal fun worthKeeping(result: CtcDecoder.Result): Boolean {
+            val letters = result.text.count(Char::isLetter)
+            return when {
+                letters == 0 -> false
+                result.text.length == 1 -> result.confidence >= SINGLE_LETTER_CONFIDENCE
+                else -> result.confidence >= MIN_CONFIDENCE
+            }
+        }
+
         private const val MAX_THREADS = 4
         // Small images are scaled up so their short side has at least this many
         // pixels (text gets big enough), large ones down to this long side.

@@ -82,6 +82,7 @@ import io.github.lenkr0.verba.ui.theme.reading
 object HomeTags {
     const val SEARCH_FIELD = "home_search_field"
     const val START_REVIEW = "home_start_review"
+    const val OPEN_IMAGE = "home_open_image"
     fun status(status: LearningStatus) = "home_status_${status.name.lowercase()}"
     fun entry(id: String) = "home_entry_$id"
 }
@@ -105,6 +106,7 @@ class HomeActions(
     val onToggleSource: (String) -> Unit = {},
     val onToggleStatus: (LearningStatus) -> Unit = {},
     val onStartReview: () -> Unit = {},
+    val onOpenImage: () -> Unit = {},
     val onUndo: (PendingDeletion) -> Unit = {},
     val onUndoDismissed: () -> Unit = {},
 )
@@ -137,6 +139,9 @@ fun HomeScreen(state: HomeState, actions: HomeActions) {
                 TopAppBar(
                     title = { Text(stringResource(R.string.app_name)) },
                     actions = {
+                        IconButton(onClick = actions.onOpenImage, modifier = Modifier.testTag(HomeTags.OPEN_IMAGE)) {
+                            Icon(painterResource(R.drawable.ic_image_search), stringResource(R.string.ocr_open_image))
+                        }
                         if (!state.entries.isNullOrEmpty() || state.filter != ListFilter()) {
                             IconButton(onClick = { searching = true }) {
                                 Icon(painterResource(R.drawable.ic_search), stringResource(R.string.action_search))

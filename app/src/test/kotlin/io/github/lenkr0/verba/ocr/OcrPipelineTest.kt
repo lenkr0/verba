@@ -142,6 +142,19 @@ class OcrPipelineTest {
     }
 
     @Test
+    fun noiseIsDropped() {
+        fun keep(text: String, confidence: Float) = OcrEngine.worthKeeping(CtcDecoder.Result(text, confidence))
+        assertFalse(keep("0", 0.8f)) // a battery icon
+        assertFalse(keep("18", 0.99f))
+        assertFalse(keep("?!", 0.95f))
+        assertFalse(keep("A", 0.6f)) // a drawing
+        assertTrue(keep("A", 0.95f))
+        assertTrue(keep("何", 0.95f))
+        assertTrue(keep("うーん", 0.8f))
+        assertFalse(keep("taCm", 0.3f))
+    }
+
+    @Test
     fun detectionSizeIsAMultipleOf32() {
         assertEquals(1088 to 2400, OcrEngine.detectionSize(1080, 2400))
         assertEquals(1216 to 736, OcrEngine.detectionSize(500, 300))

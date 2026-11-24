@@ -23,6 +23,11 @@ import io.github.lenkr0.verba.ui.theme.isDarkTheme
  * selected text, so the caller always gets RESULT_CANCELED.
  */
 class CaptureActivity : ComponentActivity() {
+    companion object {
+        /** Package of the app the text came from, when Verba itself opens the sheet. */
+        const val EXTRA_SOURCE_APP = "io.github.lenkr0.verba.SOURCE_APP"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -34,8 +39,11 @@ class CaptureActivity : ComponentActivity() {
             return
         }
         // Text selection menus start us for a result, which tells us the caller;
-        // otherwise the referrer is the best guess
-        val app = CaptureIntents.sourceApp(packageName, callingPackage, referrer?.takeIf { it.scheme == "android-app" }?.host)
+        // otherwise the referrer is the best guess. Verba's own text recognition
+        // passes on the app the image came from.
+        val referrerApp = referrer?.takeIf { it.scheme == "android-app" }?.host
+        val forwarded = intent.getStringExtra(EXTRA_SOURCE_APP)?.takeIf { referrerApp == packageName }
+        val app = CaptureIntents.sourceApp(packageName, callingPackage, forwarded, referrerApp)
         val request = CaptureRequest(text, app, app?.let(::appLabel))
         val container = appContainer
 

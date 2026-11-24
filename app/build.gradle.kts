@@ -139,6 +139,9 @@ android {
         disable += setOf("GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion")
         // targetSdk stays at 36 (Android 16) on purpose: it is what the app is tested on
         disable += "OldTargetApi"
+        // Release builds are for ARM phones and e-readers; x86_64 (only in debug
+        // builds, for emulators) would add 20 MB of text recognition library
+        disable += "ChromeOsAbiSupport"
         warningsAsErrors = true
     }
 

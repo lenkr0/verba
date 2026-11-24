@@ -18,6 +18,7 @@ import java.io.File
 import io.github.lenkr0.verba.data.VocabRepository
 import io.github.lenkr0.verba.device.EInkDevices
 import io.github.lenkr0.verba.language.Languages
+import io.github.lenkr0.verba.ocr.OcrModels
 import io.github.lenkr0.verba.review.ReviewLimits
 import io.github.lenkr0.verba.review.ReviewRepository
 import io.github.lenkr0.verba.settings.SettingsRepository
@@ -56,6 +57,7 @@ class AppContainer(context: Context) {
         DictionaryDownloader(dictionaryStore, userAgent = "Verba/${BuildConfig.VERSION_NAME}"),
         scope,
     )
+    val ocrModels = OcrModels(File(context.filesDir, "ocr"), userAgent = "Verba/${BuildConfig.VERSION_NAME}", scope)
     val isEInkDevice: Boolean = EInkDevices.isCurrentDevice()
 }
 

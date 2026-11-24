@@ -12,10 +12,11 @@ dictionaries work offline, it has no ads and no tracking, and it doesn't
 need Google Play services. An E-ink mode makes it comfortable on
 e-readers such as the Boox Go 7.
 
-> **Status: early development.** Verba collects words from any app, looks
-> them up in offline dictionaries you download in the app and lets you review
-> them with spaced repetition. The features below arrive milestone by
-> milestone, see the [roadmap](../../issues?q=label%3Amilestone).
+> **Status: early development.** Verba collects words from any app – also
+> from manga pages and screenshots – looks them up in offline dictionaries you
+> download in the app and lets you review them with spaced repetition. The
+> features below arrive milestone by milestone, see the
+> [roadmap](../../issues?q=label%3Amilestone).
 > Screenshots follow soon.
 
 ## Features
@@ -45,6 +46,12 @@ Already there:
   button says when the word comes back. Words with several sentences show
   them in turn. Daily limits for new words and reviews, and the last
   rating can be undone.
+- **Text in images and on the screen:** share a manga page or a screenshot
+  to Verba, pick an image, or use the "Read screen" quick settings tile.
+  Verba recognizes the text – Chinese, Japanese (also vertical speech
+  bubbles) and Latin script – and frames each speech bubble; tap one and
+  save its words with the bubble as the sentence. Recognition runs on your
+  device (PaddleOCR's PP-OCRv5 models on ncnn, an 11 MB download once).
 - **Light and dark theme**, following the system or set by hand.
 - **E-ink mode:** pure black and white, no animations, larger touch targets.
   On Boox e-readers Verba suggests it on first start.
@@ -52,8 +59,6 @@ Already there:
 
 Planned, in this order:
 
-- [ ] **Manga and images:** text recognition on screenshots (share or
-  quick-settings tile); tap a recognized word to look it up.
 - [ ] **Sentence translation** (optional, offline if feasible).
 - [ ] **Export and backup:** CSV, JSON, AnkiDroid.
 - [ ] **Home screen widget** "Word of the day".
@@ -69,7 +74,14 @@ Verba shows up in three places:
   app.
 - **Reading apps with external dictionaries:** if your reader can send words
   to ColorDict or Aard 2, choose one of them as its dictionary; the word
-  then opens in Verba.
+  then opens in Verba. In Readest, turn on the system dictionary (Settings →
+  Language → Dictionaries) and pick Verba as lookup app; select a whole
+  sentence to keep it with the word.
+- **Images:** share an image to "Find text with Verba", or tap the image
+  icon above the word list. For manga and anything else on the screen, add
+  the "Read screen" tile (Settings → Text recognition → Read the screen):
+  Android asks for consent each time, Verba takes one picture of the screen
+  and stops.
 
 Pick your own language once under Settings → Translate into, and download
 the dictionaries you need under Settings → Dictionaries.
@@ -81,9 +93,14 @@ still counts for the evening.
 
 ## Privacy
 
-- Verba requests **one permission: internet access**, used only when you
-  download a dictionary – from this project's releases on GitHub, nothing
-  else. CI fails if a library tries to add any other permission
+- **Internet access** is used only when you download a dictionary or the
+  text recognition models – from this project's releases on GitHub, nothing
+  else.
+- **Foreground service for screen capture**, only for the "Read screen"
+  tile: after Android asked you, it runs while one picture of the screen is
+  taken, then stops. The picture stays in memory, is never saved and never
+  leaves your device.
+- CI fails if a library tries to add any other permission
   (`tools/check-permissions.sh`).
 - No telemetry, no ads, no Google Play services.
 - Your words are excluded from Google's cloud backup; moving to a new phone
