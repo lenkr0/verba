@@ -17,6 +17,15 @@ The icons in `app/src/main/res/drawable/ic_*.xml` (except
 - https://developer.android.com/jetpack
 - License: Apache License 2.0
 
+## FSRS (spaced repetition)
+
+The scheduler in `app/src/main/kotlin/io/github/lenkr0/verba/review/Fsrs.kt`
+is a port of py-fsrs 6.3.3, including its default parameters.
+
+- Project: https://github.com/open-spaced-repetition/py-fsrs
+- Copyright (c) 2022 Open Spaced Repetition
+- License: MIT
+
 ## Dictionary data
 
 The dictionaries are not part of the app; they are downloaded separately
