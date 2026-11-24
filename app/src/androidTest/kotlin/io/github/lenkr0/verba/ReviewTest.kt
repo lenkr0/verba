@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ActivityScenario
@@ -158,10 +159,12 @@ class ReviewTest {
 
         compose.onNode(hasContentDescription(text(R.string.action_settings))).performClick()
         waitFor(text(R.string.settings_new_per_day))
-        compose.onNodeWithText(text(R.string.settings_new_per_day)).performClick()
+        // Below the fold on small screens
+        compose.onNodeWithText(text(R.string.settings_new_per_day)).performScrollTo().performClick()
+        compose.waitUntil(5_000) { compose.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().isNotEmpty() }
         compose.onNode(hasSetTextAction()).performTextReplacement("0")
         compose.onNodeWithText(text(R.string.action_ok)).performClick()
-        assertEquals(0, container.settings.settings.value.newPerDay)
+        compose.waitUntil(5_000) { container.settings.settings.value.newPerDay == 0 }
         compose.onNode(hasContentDescription(text(R.string.action_back))).performClick()
 
         waitFor(text(R.string.review_nothing_due))
