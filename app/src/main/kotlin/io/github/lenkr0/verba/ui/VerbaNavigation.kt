@@ -66,10 +66,11 @@ private val noPredictiveTransition: AnimatedContentTransitionScope<Scene<NavKey>
     { EnterTransition.None togetherWith ExitTransition.None }
 
 @Composable
-fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Home) {
-    val backStack = when (start) {
-        StartScreen.Home -> rememberNavBackStack(HomeRoute)
-        StartScreen.Dictionaries -> rememberNavBackStack(HomeRoute, SettingsRoute, DictionariesRoute)
+fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Home, entryId: String? = null) {
+    val backStack = when {
+        entryId != null -> rememberNavBackStack(HomeRoute, EntryRoute(entryId))
+        start == StartScreen.Dictionaries -> rememberNavBackStack(HomeRoute, SettingsRoute, DictionariesRoute)
+        else -> rememberNavBackStack(HomeRoute)
     }
     val eInk = LocalEInkMode.current
 

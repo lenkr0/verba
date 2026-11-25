@@ -241,4 +241,10 @@
     <string name="restore_not_a_backup">Diese Datei ist keine Verba-Sicherung.</string>
     <string name="restore_too_new">Diese Sicherung stammt aus einer neueren Verba-Version. Bitte aktualisiere zuerst die App.</string>
     <string name="transfer_failed">Das hat nicht geklappt. Versuche es noch einmal oder wähle einen anderen Ort.</string>
+    <!-- Widget Vokabel des Tages -->
+    <string name="widget_label">Vokabel des Tages</string>
+    <string name="widget_description">Eines deiner gespeicherten Wörter, jeden Tag ein anderes.</string>
+    <string name="widget_empty_title">Noch keine Wörter</string>
+    <string name="widget_empty_body">Speichere beim Lesen Wörter – jeden Tag erscheint hier eines davon.</string>
+    <string name="widget_preview_translation">verweilen, länger bleiben</string>
 </resources>

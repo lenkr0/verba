@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0] – 2026-11-25
+
+### Word of the day
+
+- **Home screen widget** "Word of the day": one of your words with its
+  translation and the sentence you found it in (the word in bold), a
+  different one every day. Tap it to open the word's page.
+- **Nothing runs in the background:** the widget is drawn when you place it,
+  when you leave Verba (so new words count) and shortly after midnight by
+  Android's alarm clock – inexact, no extra permission.
+- **Light, dark and E-ink:** follows the system theme; in Verba's E-ink mode
+  it is black on white with a frame.
+- **The same word everywhere:** the choice is a documented function of the
+  date and the words (`docs/data-format.md`), so another app with the same
+  words – such as Hora – can show the same word of the day.
+
 ## [0.7.0] – 2026-11-25
 
 ### Backup and export

@@ -2,4 +2,8 @@
 <resources>
     <color name="ic_launcher_background">#35557A</color>
     <color name="window_background">#FAF9F6</color>
+    <!-- Word of the day widget (light; dark in values-night) -->
+    <color name="widget_surface">#FAF9F6</color>
+    <color name="widget_text">#1B1C1E</color>
+    <color name="widget_text_secondary">#46474A</color>
 </resources>

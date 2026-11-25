@@ -243,4 +243,12 @@
     <string name="restore_not_a_backup">This file isn’t a Verba backup.</string>
     <string name="restore_too_new">This backup comes from a newer Verba. Please update the app first.</string>
     <string name="transfer_failed">That didn’t work. Please try again or pick another place.</string>
+    <!-- Word of the day widget -->
+    <string name="widget_label">Word of the day</string>
+    <string name="widget_description">One of your saved words, a different one every day.</string>
+    <string name="widget_empty_title">No words yet</string>
+    <string name="widget_empty_body">Save words while reading – one of them shows up here every day.</string>
+    <string name="widget_preview_word" translatable="false">linger</string>
+    <string name="widget_preview_translation">to stay longer than expected</string>
+    <string name="widget_preview_sentence" translatable="false">The smell of coffee lingered in the hallway.</string>
 </resources>

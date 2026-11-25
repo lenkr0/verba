@@ -2,6 +2,11 @@ package io.github.lenkr0.verba
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
+import io.github.lenkr0.verba.widget.WordWidget
+import kotlinx.coroutines.launch
 import io.github.lenkr0.verba.backup.AnkiExport
 import io.github.lenkr0.verba.backup.BackupRepository
 import io.github.lenkr0.verba.backup.CsvExport
@@ -35,6 +40,12 @@ class VerbaApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        // Words may have changed: the widget shows today's word from the current list
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStop(owner: LifecycleOwner) {
+                container.scope.launch { WordWidget.refresh(this@VerbaApplication) }
+            }
+        })
     }
 }
 

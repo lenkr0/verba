@@ -26,6 +26,9 @@ class MainActivity : ComponentActivity() {
     companion object {
         /** Extra for intents that open a particular screen. */
         const val EXTRA_OPEN = "io.github.lenkr0.verba.OPEN"
+
+        /** Opens the page of this entry (from the widget). */
+        const val EXTRA_ENTRY = "io.github.lenkr0.verba.ENTRY"
         const val OPEN_DICTIONARIES = "dictionaries"
     }
 
@@ -43,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
             VerbaTheme(darkTheme = dark, eInk = settings.eInkMode) {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    VerbaNavigation(container, start)
+                    VerbaNavigation(container, start, entryId = intent?.getStringExtra(EXTRA_ENTRY))
                 }
                 if (settings.shouldSuggestEInk(container.isEInkDevice)) {
                     EInkSuggestionDialog(
