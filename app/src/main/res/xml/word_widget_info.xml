@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No updatePeriodMillis: the widget sets an alarm for the next midnight itself. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/widget_word"
+    android:minWidth="180dp"
+    android:minHeight="80dp"
+    android:minResizeWidth="120dp"
+    android:minResizeHeight="60dp"
+    android:previewLayout="@layout/widget_word_preview"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

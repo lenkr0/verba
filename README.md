@@ -56,16 +56,21 @@ Already there:
   the newer change of each word wins), a CSV table, and an Anki deck
   (.apkg) for AnkiDroid or Anki with your sentence as a cloze card – all
   through the system file picker, no storage permission.
+- **Word of the day** on the home screen: a widget with one of your words,
+  its translation and sentence, a different one every day; tap it to open
+  the word. Drawn once a day by Android's alarm clock, nothing runs in the
+  background; black and white in E-ink mode.
 - **Light and dark theme**, following the system or set by hand.
 - **E-ink mode:** pure black and white, no animations, larger touch targets.
   On Boox e-readers Verba suggests it on first start.
 - **English and German**, with a per-app language setting.
 
-Planned, in this order:
+Planned:
 
 - [ ] **Sentence translation** (optional; offline with Bergamot is feasible
   but a larger piece of work, postponed – see the issue).
-- [ ] **Home screen widget** "Word of the day".
+- [ ] A faster capture sheet and example sentences for words saved without
+  one (see the issues).
 
 ## Using Verba
 

@@ -200,7 +200,27 @@ plus an empty `media` file), which AnkiDroid and Anki import:
   export updates the notes instead of adding duplicates.
 - Tags: `verba`, the language, and the book with spaces as `_`.
 
-## Planned
+## Word of the day
 
-- **Word of the day (M8):** chosen deterministically from the date and the
-  entry IDs and documented here, so other apps can show the same word.
+The widget's word of the day is chosen so that any app with the same words
+(e.g. Hora, reading a synced backup) shows the same one:
+
+1. Candidates: all entries with `deleted_at` null.
+2. For each, the SHA-256 of the UTF-8 text `YYYY-MM-DD:<id>`, with the local
+   date of the day (ISO 8601) and the entry's `id`.
+3. The entry with the smallest hash (compared byte by byte, unsigned – the
+   same as comparing the lowercase hex strings) is the word of the day.
+
+The day changes at local midnight. Adding a word changes today's choice only
+if the new word happens to win. In Python:
+
+```python
+import hashlib
+def word_of_the_day(ids, date):  # date: "2026-11-25"
+    return min(ids, key=lambda i: hashlib.sha256(f"{date}:{i}".encode()).hexdigest(), default=None)
+```
+
+For the IDs `3f2b8c1e-0d4a-4c6e-9b7a-1e2f3a4b5c6d`,
+`a1b2c3d4-e5f6-4789-8abc-def012345678`, `7c9e6679-7425-40de-944b-e07fc1f90ae7`
+and `e4eaaaf2-d142-11e1-b3e4-080027620cdd`, 2026-11-25 picks the first and
+2026-11-26 the last (tested in `WordOfTheDayTest`).

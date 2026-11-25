@@ -60,16 +60,21 @@ Schon da:
   Änderung), eine CSV-Tabelle und ein Anki-Stapel (.apkg) für AnkiDroid
   oder Anki mit deinem Satz als Lückentext-Karte – alles über die
   Dateiauswahl des Systems, ohne Speicher-Berechtigung.
+- **Vokabel des Tages** auf dem Startbildschirm: ein Widget mit einem
+  deiner Wörter, seiner Übersetzung und seinem Satz, jeden Tag ein anderes;
+  antippen öffnet das Wort. Einmal am Tag über Androids Wecker neu
+  gezeichnet, im Hintergrund läuft nichts; im E-Ink-Modus schwarz-weiß.
 - **Helles und dunkles Design**, wie im System oder von Hand gewählt.
 - **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
   Tippflächen. Auf Boox-E-Readern schlägt Verba ihn beim ersten Start vor.
 - **Englisch und Deutsch**, die Sprache lässt sich pro App einstellen.
 
-Geplant, in dieser Reihenfolge:
+Geplant:
 
 - [ ] **Satzübersetzung** (optional; offline mit Bergamot ist machbar, aber
   ein größeres Stück Arbeit und vorerst zurückgestellt – siehe Issue).
-- [ ] **Startbildschirm-Widget** „Vokabel des Tages“.
+- [ ] Ein schnelleres Erfassen-Fenster und Beispielsätze für Wörter, die
+  ohne Satz gespeichert wurden (siehe Issues).
 
 ## Verba benutzen
 
