@@ -2,6 +2,10 @@ package io.github.lenkr0.verba
 
 import android.app.Application
 import android.content.Context
+import io.github.lenkr0.verba.backup.AnkiExport
+import io.github.lenkr0.verba.backup.BackupRepository
+import io.github.lenkr0.verba.backup.CsvExport
+import io.github.lenkr0.verba.backup.Transfers
 import io.github.lenkr0.verba.data.Deletions
 import io.github.lenkr0.verba.data.VerbaDatabase
 import io.github.lenkr0.verba.dictionary.Dictionaries
@@ -57,6 +61,15 @@ class AppContainer(context: Context) {
         DictionaryDownloader(dictionaryStore, userAgent = "Verba/${BuildConfig.VERSION_NAME}"),
         scope,
     )
+    val transfers: Transfers by lazy {
+        Transfers(
+            context.applicationContext,
+            BackupRepository(database, vocabulary, BuildConfig.VERSION_NAME),
+            CsvExport(vocabulary),
+            AnkiExport(vocabulary, File(context.cacheDir, "anki-export")),
+            scope,
+        )
+    }
     val ocrModels = OcrModels(File(context.filesDir, "ocr"), userAgent = "Verba/${BuildConfig.VERSION_NAME}", scope)
     val isEInkDevice: Boolean = EInkDevices.isCurrentDevice()
 }

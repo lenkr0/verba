@@ -5,6 +5,8 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 // The data model is described in docs/data-format.md. Rules that keep it ready
 // for syncing between devices: random UUIDs as ids, UTC epoch milliseconds,
@@ -16,20 +18,21 @@ import androidx.room.PrimaryKey
     tableName = "entries",
     indices = [Index(value = ["language", "lemma_key"]), Index(value = ["updated_at"])],
 )
+@Serializable
 data class EntryEntity(
     @PrimaryKey val id: String,
     /** BCP 47 tag of the word's language, e.g. "en", "zh". */
     val language: String,
     /** BCP 47 tag of the language translation and definition are written in. */
-    @ColumnInfo(name = "target_language") val targetLanguage: String,
+    @ColumnInfo(name = "target_language") @SerialName("target_language") val targetLanguage: String,
     val lemma: String,
     /** Normalized [lemma] (NFKC, lower case) that identifies duplicates. */
-    @ColumnInfo(name = "lemma_key") val lemmaKey: String,
+    @ColumnInfo(name = "lemma_key") @SerialName("lemma_key") val lemmaKey: String,
     val translation: String,
     val definition: String,
-    @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "updated_at") val updatedAt: Long,
-    @ColumnInfo(name = "deleted_at") val deletedAt: Long? = null,
+    @ColumnInfo(name = "created_at") @SerialName("created_at") val createdAt: Long,
+    @ColumnInfo(name = "updated_at") @SerialName("updated_at") val updatedAt: Long,
+    @ColumnInfo(name = "deleted_at") @SerialName("deleted_at") val deletedAt: Long? = null,
 )
 
 /** One encounter of an entry: the sentence it appeared in, where and when. */
@@ -37,34 +40,36 @@ data class EntryEntity(
     tableName = "contexts",
     indices = [Index(value = ["entry_id"]), Index(value = ["source_id"]), Index(value = ["source_app"])],
 )
+@Serializable
 data class ContextEntity(
     @PrimaryKey val id: String,
-    @ColumnInfo(name = "entry_id") val entryId: String,
+    @ColumnInfo(name = "entry_id") @SerialName("entry_id") val entryId: String,
     /** The sentence, or "" if only the word was selected. */
     val sentence: String,
     /** The word exactly as it appeared, e.g. "running". */
-    @ColumnInfo(name = "word_form") val wordForm: String,
+    @ColumnInfo(name = "word_form") @SerialName("word_form") val wordForm: String,
     /** UTF-16 offsets of the word in [sentence]; -1 when unknown. */
-    @ColumnInfo(name = "word_start") val wordStart: Int,
-    @ColumnInfo(name = "word_end") val wordEnd: Int,
-    @ColumnInfo(name = "source_id") val sourceId: String?,
+    @ColumnInfo(name = "word_start") @SerialName("word_start") val wordStart: Int,
+    @ColumnInfo(name = "word_end") @SerialName("word_end") val wordEnd: Int,
+    @ColumnInfo(name = "source_id") @SerialName("source_id") val sourceId: String?,
     /** Package of the app the text came from, if Android told us. */
-    @ColumnInfo(name = "source_app") val sourceApp: String?,
-    @ColumnInfo(name = "source_app_label") val sourceAppLabel: String?,
-    @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "updated_at") val updatedAt: Long,
-    @ColumnInfo(name = "deleted_at") val deletedAt: Long? = null,
+    @ColumnInfo(name = "source_app") @SerialName("source_app") val sourceApp: String?,
+    @ColumnInfo(name = "source_app_label") @SerialName("source_app_label") val sourceAppLabel: String?,
+    @ColumnInfo(name = "created_at") @SerialName("created_at") val createdAt: Long,
+    @ColumnInfo(name = "updated_at") @SerialName("updated_at") val updatedAt: Long,
+    @ColumnInfo(name = "deleted_at") @SerialName("deleted_at") val deletedAt: Long? = null,
 )
 
 /** A book, novel, manga or website the user reads. */
 @Entity(tableName = "sources", indices = [Index(value = ["title_key"])])
+@Serializable
 data class SourceEntity(
     @PrimaryKey val id: String,
     val title: String,
-    @ColumnInfo(name = "title_key") val titleKey: String,
-    @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "updated_at") val updatedAt: Long,
-    @ColumnInfo(name = "deleted_at") val deletedAt: Long? = null,
+    @ColumnInfo(name = "title_key") @SerialName("title_key") val titleKey: String,
+    @ColumnInfo(name = "created_at") @SerialName("created_at") val createdAt: Long,
+    @ColumnInfo(name = "updated_at") @SerialName("updated_at") val updatedAt: Long,
+    @ColumnInfo(name = "deleted_at") @SerialName("deleted_at") val deletedAt: Long? = null,
 )
 
 /** An entry for the word list, with its most recent sentence and source. */

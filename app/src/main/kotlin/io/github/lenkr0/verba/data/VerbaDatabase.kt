@@ -21,6 +21,8 @@ abstract class VerbaDatabase : RoomDatabase() {
 
     abstract fun reviewDao(): ReviewDao
 
+    abstract fun backupDao(): BackupDao
+
     companion object {
         fun create(context: Context): VerbaDatabase =
             Room.databaseBuilder(context, VerbaDatabase::class.java, "verba.db").build()

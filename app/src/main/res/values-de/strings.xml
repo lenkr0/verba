@@ -28,7 +28,7 @@
     <string name="settings_license">Lizenz</string>
     <string name="settings_license_summary">GNU General Public License v3.0 oder neuer</string>
     <string name="settings_privacy">Datenschutz</string>
-    <string name="settings_privacy_summary">Verba geht nur online, wenn du ein Wörterbuch lädst. Deine Wörter bleiben auf diesem Gerät.</string>
+    <string name="settings_privacy_summary">Verba geht nur online, wenn du ein Wörterbuch oder die Modelle der Texterkennung lädst. Deine Wörter bleiben auf diesem Gerät, außer du exportierst sie.</string>
 
     <!-- E-ink suggestion on e-readers -->
     <string name="eink_prompt_title">E-Ink-Display erkannt</string>
@@ -219,4 +219,26 @@
     <string name="capture_channel">Bildschirmaufnahme</string>
     <string name="capture_notification">Bildschirm wird gelesen …</string>
     <string name="capture_failed">Der Bildschirm konnte nicht aufgenommen werden.</string>
+    <!-- Sicherung und Export -->
+    <string name="settings_section_backup">Sicherung und Export</string>
+    <string name="settings_backup">Sichern</string>
+    <string name="settings_backup_summary">Alle Wörter, Sätze und der Lernfortschritt in einer Datei (JSON).</string>
+    <string name="settings_restore">Aus einer Sicherung wiederherstellen</string>
+    <string name="settings_restore_summary">Ergänzt, was hier fehlt. Bei Wörtern, die es in beiden gibt, gewinnt die neuere Änderung – nichts geht verloren.</string>
+    <string name="settings_export_csv">Als Tabelle exportieren (CSV)</string>
+    <string name="settings_export_csv_summary">Eine Zeile pro Wort mit seinem Satz, für Tabellen und andere Apps.</string>
+    <string name="settings_export_anki">Nach Anki exportieren</string>
+    <string name="settings_export_anki_summary">Ein Stapel für AnkiDroid oder Anki (.apkg): der Satz als Lückentext-Karte, die Übersetzung als Hinweis.</string>
+    <plurals name="backup_saved">
+        <item quantity="one">Sicherung gespeichert: %d Wort.</item>
+        <item quantity="other">Sicherung gespeichert: %d Wörter.</item>
+    </plurals>
+    <plurals name="export_saved">
+        <item quantity="one">%d Wort exportiert.</item>
+        <item quantity="other">%d Wörter exportiert.</item>
+    </plurals>
+    <string name="restore_done">Sicherung wiederhergestellt. Neue Wörter: %1$d, aktualisiert: %2$d.</string>
+    <string name="restore_not_a_backup">Diese Datei ist keine Verba-Sicherung.</string>
+    <string name="restore_too_new">Diese Sicherung stammt aus einer neueren Verba-Version. Bitte aktualisiere zuerst die App.</string>
+    <string name="transfer_failed">Das hat nicht geklappt. Versuche es noch einmal oder wähle einen anderen Ort.</string>
 </resources>

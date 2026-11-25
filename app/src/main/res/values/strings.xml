@@ -30,7 +30,7 @@
     <string name="settings_license">License</string>
     <string name="settings_license_summary">GNU General Public License v3.0 or later</string>
     <string name="settings_privacy">Privacy</string>
-    <string name="settings_privacy_summary">Verba only goes online when you download a dictionary. Your words stay on this device.</string>
+    <string name="settings_privacy_summary">Verba only goes online when you download a dictionary or the text recognition models. Your words stay on this device unless you export them.</string>
 
     <!-- E-ink suggestion on e-readers -->
     <string name="eink_prompt_title">E-ink display detected</string>
@@ -221,4 +221,26 @@
     <string name="capture_channel">Screen capture</string>
     <string name="capture_notification">Reading the screen…</string>
     <string name="capture_failed">Couldn’t capture the screen.</string>
+    <!-- Backup and export -->
+    <string name="settings_section_backup">Backup and export</string>
+    <string name="settings_backup">Back up</string>
+    <string name="settings_backup_summary">All words, sentences and learning progress in one file (JSON).</string>
+    <string name="settings_restore">Restore from a backup</string>
+    <string name="settings_restore_summary">Adds what’s missing here. For words in both, the newer change wins – nothing is lost.</string>
+    <string name="settings_export_csv">Export as table (CSV)</string>
+    <string name="settings_export_csv_summary">One row per word with its sentence, for spreadsheets and other apps.</string>
+    <string name="settings_export_anki">Export to Anki</string>
+    <string name="settings_export_anki_summary">A deck for AnkiDroid or Anki (.apkg): the sentence as a cloze card, the translation as a hint.</string>
+    <plurals name="backup_saved">
+        <item quantity="one">Backup saved: %d word.</item>
+        <item quantity="other">Backup saved: %d words.</item>
+    </plurals>
+    <plurals name="export_saved">
+        <item quantity="one">Exported %d word.</item>
+        <item quantity="other">Exported %d words.</item>
+    </plurals>
+    <string name="restore_done">Backup restored. New words: %1$d, updated: %2$d.</string>
+    <string name="restore_not_a_backup">This file isn’t a Verba backup.</string>
+    <string name="restore_too_new">This backup comes from a newer Verba. Please update the app first.</string>
+    <string name="transfer_failed">That didn’t work. Please try again or pick another place.</string>
 </resources>
