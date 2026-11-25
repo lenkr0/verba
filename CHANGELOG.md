@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.7.0] – 2026-11-25
+
+### Backup and export
+
+Settings → Backup and export, everything through the system file picker
+(no storage permission):
+
+- **Back up:** all words, sentences, books and learning progress in one
+  JSON file.
+- **Restore:** merges a backup into what's on the device – words that are
+  missing are added, for words in both the newer change wins, and words
+  saved on two devices become one. Restoring an old backup never undoes
+  newer work.
+- **CSV:** one row per word with translation, sentence, book, learning
+  status and date – for spreadsheets and other apps (opens correctly in
+  Excel, Chinese and Japanese included).
+- **Anki:** a deck (.apkg) for AnkiDroid or Anki with a cloze note per word:
+  your sentence with the gap, the translation as a hint to tap. Exporting
+  again updates the notes in Anki instead of duplicating them.
+
+### Good to know
+
+- The formats are described in `docs/data-format.md`; the JSON backup is
+  also the basis for a later sync.
+- Sentence translation (planned as 0.7.0) is postponed: offline translation
+  is feasible but a bigger piece of work (see the issue on GitHub).
+- The privacy note in the settings now also mentions the text recognition
+  models and exports.
+
 ## [0.6.0] – 2026-11-24
 
 ### Text in images and on the screen

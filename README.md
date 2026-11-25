@@ -52,6 +52,10 @@ Already there:
   bubbles) and Latin script – and frames each speech bubble; tap one and
   save its words with the bubble as the sentence. Recognition runs on your
   device (PaddleOCR's PP-OCRv5 models on ncnn, an 11 MB download once).
+- **Backup and export:** a JSON backup of everything (restoring merges,
+  the newer change of each word wins), a CSV table, and an Anki deck
+  (.apkg) for AnkiDroid or Anki with your sentence as a cloze card – all
+  through the system file picker, no storage permission.
 - **Light and dark theme**, following the system or set by hand.
 - **E-ink mode:** pure black and white, no animations, larger touch targets.
   On Boox e-readers Verba suggests it on first start.
@@ -59,8 +63,8 @@ Already there:
 
 Planned, in this order:
 
-- [ ] **Sentence translation** (optional, offline if feasible).
-- [ ] **Export and backup:** CSV, JSON, AnkiDroid.
+- [ ] **Sentence translation** (optional; offline with Bergamot is feasible
+  but a larger piece of work, postponed – see the issue).
 - [ ] **Home screen widget** "Word of the day".
 
 ## Using Verba

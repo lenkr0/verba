@@ -55,6 +55,11 @@ Schon da:
   Sprechblase ein; antippen und ihre Wörter mit der Sprechblase als Satz
   speichern. Die Erkennung läuft auf deinem Gerät (PaddleOCRs
   PP-OCRv5-Modelle auf ncnn, einmalig 11 MB Download).
+- **Sicherung und Export:** eine JSON-Sicherung von allem
+  (Wiederherstellen führt zusammen, bei jedem Wort gewinnt die neuere
+  Änderung), eine CSV-Tabelle und ein Anki-Stapel (.apkg) für AnkiDroid
+  oder Anki mit deinem Satz als Lückentext-Karte – alles über die
+  Dateiauswahl des Systems, ohne Speicher-Berechtigung.
 - **Helles und dunkles Design**, wie im System oder von Hand gewählt.
 - **E-Ink-Modus:** reines Schwarz-Weiß, keine Animationen, größere
   Tippflächen. Auf Boox-E-Readern schlägt Verba ihn beim ersten Start vor.
@@ -62,8 +67,8 @@ Schon da:
 
 Geplant, in dieser Reihenfolge:
 
-- [ ] **Satzübersetzung** (optional, offline wenn machbar).
-- [ ] **Export und Backup:** CSV, JSON, AnkiDroid.
+- [ ] **Satzübersetzung** (optional; offline mit Bergamot ist machbar, aber
+  ein größeres Stück Arbeit und vorerst zurückgestellt – siehe Issue).
 - [ ] **Startbildschirm-Widget** „Vokabel des Tages“.
 
 ## Verba benutzen

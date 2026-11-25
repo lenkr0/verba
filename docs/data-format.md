@@ -146,23 +146,61 @@ different IDs. A sync has to merge them: keep the entry with the older
 review card as in merging, and mark the other one deleted. The same goes
 for sources with the same `title_key`.
 
+Restoring a backup applies exactly these rules (see below).
+
+## JSON backup
+
+Settings → Backup and export → Back up writes one UTF-8 JSON file with every
+row of every table, deleted ones included (their tombstones matter for a
+merge). Rows use the column names and types above:
+
+```json
+{
+  "format": "verba-backup",
+  "version": 1,
+  "exported_at": 1795000000000,
+  "app_version": "0.7.0",
+  "entries": [{ "id": "…", "language": "en", "target_language": "de", "lemma": "run", "…": "…" }],
+  "contexts": [],
+  "sources": [],
+  "review_cards": [],
+  "review_logs": []
+}
+```
+
+- `format` is always `verba-backup`; `version` changes only when the meaning
+  of existing fields changes. A reader should ignore fields it doesn't know.
+- **Restoring merges, it never replaces:** a record that doesn't exist yet is
+  added; one that exists is replaced only if the backup's `updated_at` is
+  newer (last write wins per record). Then duplicates are merged as in
+  *Syncing duplicates*. Restoring the same backup twice changes nothing, and
+  an old backup never undoes newer work.
+- The same file is the planned format for a sync, e.g. a JSON file on your
+  own WebDAV share that other apps such as Hora read.
+
+## CSV export
+
+One row per word that isn't deleted, oldest first, UTF-8 with a byte order
+mark, comma-separated, quoted as in RFC 4180, CRLF line ends. Columns:
+`word`, `translation`, `definition`, `language`, `target_language`,
+`sentence` (the most recent one), `source` (its book), `status` (`new`,
+`learning`, `known`), `added` (local date, `YYYY-MM-DD`).
+
+## Anki export
+
+An `.apkg` package in Anki's classic format (`collection.anki2`, schema 11,
+plus an empty `media` file), which AnkiDroid and Anki import:
+
+- Note type **Verba Cloze** (cloze, fixed id `1732500000001`) with the fields
+  `Text` (the most recent sentence with the word as `{{c1::…}}`, or just the
+  word), `Word`, `Translation`, `Definition`, `Source`. The front shows the
+  sentence with the gap and the translation as a hint to tap.
+- Deck **Verba** (fixed id `1732500000002`), cards new; Anki schedules them.
+- Each note's `guid` is `verba:` + the entry's ID, so importing a newer
+  export updates the notes instead of adding duplicates.
+- Tags: `verba`, the language, and the book with spaces as `_`.
+
 ## Planned
-
-- **JSON backup (M7):** the tables above as arrays in one file, with a format
-  marker and version:
-
-  ```json
-  {
-    "format": "verba-backup",
-    "version": 1,
-    "exportedAt": 1795000000000,
-    "entries": [],
-    "contexts": [],
-    "sources": [],
-    "reviewCards": [],
-    "reviewLogs": []
-  }
-  ```
 
 - **Word of the day (M8):** chosen deterministically from the date and the
   entry IDs and documented here, so other apps can show the same word.

@@ -41,7 +41,11 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.lenkr0.verba.BuildConfig
 import io.github.lenkr0.verba.R
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import io.github.lenkr0.verba.backup.Transfers
 import io.github.lenkr0.verba.ocr.OcrModels
+import java.time.LocalDate
 import io.github.lenkr0.verba.ocr.ReadScreenTileService
 import io.github.lenkr0.verba.settings.AppLanguage
 import io.github.lenkr0.verba.settings.AppSettings
@@ -64,6 +68,7 @@ private const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
 fun SettingsScreen(
     repository: SettingsRepository,
     ocrModels: OcrModels,
+    transfers: Transfers,
     suggestedTargets: List<String>,
     onOpenDictionaries: () -> Unit,
     onBack: () -> Unit,
@@ -79,6 +84,20 @@ fun SettingsScreen(
     val modelsInstalled by ocrModels.installed.collectAsStateWithLifecycle()
     val modelProgress by ocrModels.progress.collectAsStateWithLifecycle()
     val modelSize = remember { Formatter.formatShortFileSize(context, OcrModels.PACK.size) }
+    val today = remember { LocalDate.now().toString() }
+    // The system file picker: the user chooses the place, no storage permission
+    val backupFile = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        uri?.let(transfers::backup)
+    }
+    val restoreFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let(transfers::restore)
+    }
+    val csvFile = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+        uri?.let(transfers::exportCsv)
+    }
+    val ankiFile = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/apkg")) { uri ->
+        uri?.let(transfers::exportAnki)
+    }
 
     Scaffold(
         topBar = {
@@ -165,6 +184,28 @@ fun SettingsScreen(
                 title = stringResource(R.string.settings_reviews_per_day),
                 summary = settings.reviewsPerDay.toString(),
                 onClick = { editLimit = Limit.Reviews },
+            )
+
+            SectionHeader(stringResource(R.string.settings_section_backup))
+            ClickRow(
+                title = stringResource(R.string.settings_backup),
+                summary = stringResource(R.string.settings_backup_summary),
+                onClick = { backupFile.launch("verba-backup-$today.json") },
+            )
+            ClickRow(
+                title = stringResource(R.string.settings_restore),
+                summary = stringResource(R.string.settings_restore_summary),
+                onClick = { restoreFile.launch(arrayOf("application/json", "application/octet-stream", "text/plain")) },
+            )
+            ClickRow(
+                title = stringResource(R.string.settings_export_csv),
+                summary = stringResource(R.string.settings_export_csv_summary),
+                onClick = { csvFile.launch("verba-words-$today.csv") },
+            )
+            ClickRow(
+                title = stringResource(R.string.settings_export_anki),
+                summary = stringResource(R.string.settings_export_anki_summary),
+                onClick = { ankiFile.launch("verba-$today.apkg") },
             )
 
             SectionHeader(stringResource(R.string.settings_section_about))

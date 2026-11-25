@@ -162,6 +162,7 @@ fun VerbaNavigation(container: AppContainer, start: StartScreen = StartScreen.Ho
                 SettingsScreen(
                     repository = container.settings,
                     ocrModels = container.ocrModels,
+                    transfers = container.transfers,
                     suggestedTargets = (installed.map { it.targetLanguage } + Languages.defaultTarget() + "en").distinct(),
                     onOpenDictionaries = { backStack.add(DictionariesRoute) },
                     onBack = { backStack.removeLastOrNull() },
