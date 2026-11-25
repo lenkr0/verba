@@ -59,11 +59,14 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 --decode --ignore-garbage > "$RUNNER_TEMP/release.jks"
           echo "VERBA_KEYSTORE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
 
-      - name: Tests and release build
+      # Tests, lint and the instrumented tests already ran in CI on this commit
+      # before it was merged; repeating them here only added downloads that
+      # Maven Central rate-limits (HTTP 429) and broke releases.
+      - name: Release build
         env:
           VERBA_KEYSTORE_PASSWORD: ${{ secrets.VERBA_KEYSTORE_PASSWORD }}
           VERBA_KEY_ALIAS: ${{ secrets.VERBA_KEY_ALIAS }}
-        run: ./gradlew testDebugUnitTest lintDebug assembleRelease
+        run: ./gradlew assembleRelease
 
       - name: Check signature and permissions, name the APK
         run: |
